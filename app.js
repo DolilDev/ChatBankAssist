@@ -72,6 +72,38 @@
       .trim();
   }
 
+  /* ----- Wykrywanie języka (pl / en) ----- */
+  const PL_DIACRITICS = /[ąćęłńóśźż]/i;
+  const PL_WORDS = new Set([
+    "jak", "czy", "gdzie", "kiedy", "dlaczego", "ile", "co", "jest", "sa", "mam",
+    "chce", "chcialbym", "prosze", "dziekuje", "oraz", "lub", "nie", "tak", "jakie",
+    "gdy", "albo", "sie", "moge", "czym", "dla", "ktore", "ktora", "moj", "moje",
+    "potrzebuje", "zalozyc", "otworzyc", "zablokowac",
+  ]);
+  const EN_WORDS = new Set([
+    "how", "what", "where", "when", "why", "can", "could", "does", "did", "you",
+    "the", "is", "are", "am", "my", "want", "please", "thanks", "thank", "of",
+    "for", "and", "or", "would", "should", "will", "need", "about", "with", "have",
+    "your", "me", "account", "card", "transfer", "payment", "fee", "password",
+    "open", "block", "lost", "money", "send", "hello", "help",
+  ]);
+
+  // Zwraca "en", gdy użytkownik pisze po angielsku; w innym wypadku "pl".
+  function detectLanguage(text) {
+    const raw = String(text || "");
+    if (PL_DIACRITICS.test(raw)) return "pl";
+    let pl = 0;
+    let en = 0;
+    normalize(raw)
+      .split(" ")
+      .forEach(function (t) {
+        if (PL_WORDS.has(t)) pl++;
+        if (EN_WORDS.has(t)) en++;
+      });
+    if (en > pl) return "en";
+    return "pl"; // remis i brak sygnału → domyślnie polski (polski bank)
+  }
+
   async function loadKnowledgeBase() {
     try {
       const res = await fetch("knowledge_base.json", { cache: "no-store" });
@@ -565,7 +597,7 @@
 
   /* ----- Odpowiedź bota: tryb lokalny (baza wiedzy) albo tryb API ----- */
   async function botReply(userText) {
-    const lang = "pl"; // wykrywanie języka dodawane w kolejnym kroku
+    const lang = detectLanguage(userText); // EN gdy użytkownik pisze po angielsku
     const cfg = getApiConfig();
     if (cfg) {
       await apiReply(userText, lang, cfg);
@@ -905,6 +937,7 @@
   /* ----- Publiczne API (używane też przez stronę demo) ----- */
   window.BankBot = {
     normalize: normalize,
+    detectLanguage: detectLanguage,
     loadKnowledgeBase: loadKnowledgeBase,
     findAnswer: findAnswer,
     escalationText: escalationText,
