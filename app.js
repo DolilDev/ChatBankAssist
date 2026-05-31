@@ -11,7 +11,34 @@
   /* ----- Stan ----- */
   const state = {
     busy: false, // true gdy bot generuje odpowiedź
+    messages: [], // historia rozmowy [{ role, text, ts }]
   };
+
+  /* ----- Konfiguracja trybu API ----- */
+  const STORAGE = {
+    provider: "bank_api_provider",
+    key: "bank_api_key",
+  };
+
+  const PROVIDERS = {
+    gemini: { label: "Google Gemini", model: "gemini-2.0-flash" },
+    claude: { label: "Anthropic Claude", model: "claude-3-5-haiku-latest" },
+    openai: { label: "OpenAI", model: "gpt-4o-mini" },
+  };
+
+  // Zwraca { provider, key } gdy tryb API jest skonfigurowany, inaczej null.
+  function getApiConfig() {
+    try {
+      const provider = sessionStorage.getItem(STORAGE.provider) || "";
+      const key = sessionStorage.getItem(STORAGE.key) || "";
+      if (provider && key && PROVIDERS[provider]) {
+        return { provider: provider, key: key };
+      }
+    } catch (e) {
+      /* sessionStorage może być niedostępny */
+    }
+    return null;
+  }
 
   /* ----- Pomocnicze ----- */
   function $(sel) {
@@ -107,6 +134,236 @@
     return "Przekazuję sprawę do konsultanta. Zadzwoń na infolinię 800 123 456.";
   }
 
+  /* ----- Tryb API: instrukcja systemowa ugruntowana w bazie wiedzy ----- */
+  function buildSystemPrompt(lang) {
+    const bank = (kb.data && kb.data.meta && kb.data.meta.bank) || "Bank Przykładowy";
+    let ctx = "";
+    if (kb.data && Array.isArray(kb.data.entries)) {
+      ctx = kb.data.entries
+        .map(function (e) {
+          const q = e.q ? e.q[lang] || e.q.pl : "";
+          const a = e.a ? e.a[lang] || e.a.pl : "";
+          return "- " + q + "\n  " + a;
+        })
+        .join("\n");
+    }
+    if (lang === "en") {
+      return (
+        "You are the customer-service assistant of " + bank + ", a Polish retail bank. " +
+        "Answer ONLY based on the FAQ knowledge base below. Be concise, professional and friendly. " +
+        "If the question is not covered by the knowledge base, say you don't have a reliable answer and " +
+        "that you are escalating to a human consultant (helpline +48 800 123 456). Reply in English.\n\n" +
+        "KNOWLEDGE BASE:\n" + ctx
+      );
+    }
+    return (
+      "Jesteś asystentem obsługi klienta banku " + bank + " (polski bank detaliczny). " +
+      "Odpowiadaj WYŁĄCZNIE na podstawie poniższej bazy wiedzy FAQ. Bądź zwięzły, profesjonalny i uprzejmy. " +
+      "Jeśli pytanie nie jest objęte bazą wiedzy, napisz, że nie masz pewnej odpowiedzi i przekazujesz sprawę " +
+      "do konsultanta (infolinia 800 123 456). Odpowiadaj po polsku.\n\n" +
+      "BAZA WIEDZY:\n" + ctx
+    );
+  }
+
+  /* ----- Strumieniowe czytanie odpowiedzi SSE ----- */
+  async function* sseLines(response) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      buf += decoder.decode(chunk.value, { stream: true });
+      let idx;
+      while ((idx = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, idx).replace(/\r$/, "");
+        buf = buf.slice(idx + 1);
+        if (line) yield line;
+      }
+    }
+    if (buf.trim()) yield buf.trim();
+  }
+
+  async function readError(res, provider) {
+    let detail = "";
+    try {
+      detail = await res.text();
+    } catch (e) {
+      /* ignore */
+    }
+    return new Error(provider + " API " + res.status + (detail ? ": " + detail.slice(0, 240) : ""));
+  }
+
+  /* ----- Google Gemini (obsługuje requesty z przeglądarki / CORS) ----- */
+  async function streamGemini(key, system, messages, onToken) {
+    const url =
+      "https://generativelanguage.googleapis.com/v1beta/models/" +
+      PROVIDERS.gemini.model +
+      ":streamGenerateContent?alt=sse&key=" +
+      encodeURIComponent(key);
+    const contents = messages.map(function (m) {
+      return { role: m.role === "bot" ? "model" : "user", parts: [{ text: m.text }] };
+    });
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: contents,
+        generationConfig: { temperature: 0.3 },
+      }),
+    });
+    if (!res.ok) throw await readError(res, "Gemini");
+    let usage = null;
+    for await (const line of sseLines(res)) {
+      if (line.indexOf("data:") !== 0) continue;
+      const data = line.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        continue;
+      }
+      const cand = json.candidates && json.candidates[0];
+      const parts = cand && cand.content && cand.content.parts;
+      if (parts) parts.forEach(function (p) { if (p.text) onToken(p.text); });
+      if (json.usageMetadata) {
+        usage = {
+          promptTokens: json.usageMetadata.promptTokenCount,
+          completionTokens: json.usageMetadata.candidatesTokenCount,
+          totalTokens: json.usageMetadata.totalTokenCount,
+        };
+      }
+    }
+    return usage;
+  }
+
+  /* ----- OpenAI (UWAGA: przeglądarkowe CORS — patrz ostrzeżenia w ustawieniach) ----- */
+  async function streamOpenAI(key, system, messages, onToken) {
+    const msgs = [{ role: "system", content: system }].concat(
+      messages.map(function (m) {
+        return { role: m.role === "bot" ? "assistant" : "user", content: m.text };
+      })
+    );
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
+      body: JSON.stringify({
+        model: PROVIDERS.openai.model,
+        messages: msgs,
+        stream: true,
+        temperature: 0.3,
+        stream_options: { include_usage: true },
+      }),
+    });
+    if (!res.ok) throw await readError(res, "OpenAI");
+    let usage = null;
+    for await (const line of sseLines(res)) {
+      if (line.indexOf("data:") !== 0) continue;
+      const data = line.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        continue;
+      }
+      const delta = json.choices && json.choices[0] && json.choices[0].delta;
+      if (delta && delta.content) onToken(delta.content);
+      if (json.usage) {
+        usage = {
+          promptTokens: json.usage.prompt_tokens,
+          completionTokens: json.usage.completion_tokens,
+          totalTokens: json.usage.total_tokens,
+        };
+      }
+    }
+    return usage;
+  }
+
+  /* ----- Anthropic Claude (UWAGA: przeglądarkowe CORS — patrz ostrzeżenia w ustawieniach) ----- */
+  async function streamClaude(key, system, messages, onToken) {
+    const msgs = messages.map(function (m) {
+      return { role: m.role === "bot" ? "assistant" : "user", content: m.text };
+    });
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: PROVIDERS.claude.model,
+        max_tokens: 1024,
+        system: system,
+        messages: msgs,
+        stream: true,
+      }),
+    });
+    if (!res.ok) throw await readError(res, "Claude");
+    const usage = {};
+    for await (const line of sseLines(res)) {
+      if (line.indexOf("data:") !== 0) continue;
+      const data = line.slice(5).trim();
+      if (!data) continue;
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        continue;
+      }
+      if (json.type === "content_block_delta" && json.delta && json.delta.text) {
+        onToken(json.delta.text);
+      } else if (json.type === "message_start" && json.message && json.message.usage) {
+        usage.promptTokens = json.message.usage.input_tokens;
+      } else if (json.type === "message_delta" && json.usage) {
+        usage.completionTokens = json.usage.output_tokens;
+      }
+    }
+    if (usage.promptTokens != null || usage.completionTokens != null) {
+      usage.totalTokens = (usage.promptTokens || 0) + (usage.completionTokens || 0);
+      return usage;
+    }
+    return null;
+  }
+
+  // Wspólny punkt wejścia dla trybu API. Zwraca info o zużyciu tokenów (lub null).
+  async function streamFromAPI(provider, key, messages, opts) {
+    opts = opts || {};
+    const onToken = opts.onToken || function () {};
+    const system = opts.system || "";
+    if (provider === "gemini") return streamGemini(key, system, messages, onToken);
+    if (provider === "openai") return streamOpenAI(key, system, messages, onToken);
+    if (provider === "claude") return streamClaude(key, system, messages, onToken);
+    throw new Error("Nieznany provider: " + provider);
+  }
+
+  // Czytelny komunikat błędu trybu API (rozwijany o ostrzeżenia CORS w kolejnym kroku).
+  function apiErrorText(provider, err, lang) {
+    const raw = (err && err.message) || String(err);
+    const corsLikely = /Failed to fetch|NetworkError|Load failed|CORS/i.test(raw);
+    const name = (PROVIDERS[provider] && PROVIDERS[provider].label) || provider;
+    if (lang === "en") {
+      return (
+        "Could not reach the " + name + " API. " +
+        (corsLikely
+          ? "The browser most likely blocked the request (CORS). Gemini is the recommended provider for in-browser use. "
+          : "") +
+        "Details: " + raw
+      );
+    }
+    return (
+      "Nie udało się połączyć z API " + name + ". " +
+      (corsLikely
+        ? "Najprawdopodobniej przeglądarka zablokowała request (CORS). Do pracy w przeglądarce zalecany jest Gemini. "
+        : "") +
+      "Szczegóły: " + raw
+    );
+  }
+
   function scrollToBottom() {
     if (dom.log) dom.log.scrollTop = dom.log.scrollHeight;
   }
@@ -173,9 +430,23 @@
     });
   }
 
-  /* ----- Odpowiedź bota na podstawie bazy wiedzy ----- */
+  function recordMessage(role, text) {
+    state.messages.push({ role: role, text: text, ts: Date.now() });
+  }
+
+  /* ----- Odpowiedź bota: tryb lokalny (baza wiedzy) albo tryb API ----- */
   async function botReply(userText) {
     const lang = "pl"; // wykrywanie języka dodawane w kolejnym kroku
+    const cfg = getApiConfig();
+    if (cfg) {
+      await apiReply(userText, lang, cfg);
+    } else {
+      await localReply(userText, lang);
+    }
+  }
+
+  // Tryb lokalny — odpowiedź z bazy wiedzy, symulowany streaming słowo po słowie.
+  async function localReply(userText, lang) {
     let text;
     const match = findAnswer(userText);
     if (match) {
@@ -187,12 +458,47 @@
     } else {
       text = escalationText(lang);
     }
-
     const typing = showTyping();
     await delay(450 + Math.random() * 350);
     typing.remove();
     const bubble = addMessage("bot", "");
     await streamWords(bubble, text);
+    recordMessage("bot", text);
+  }
+
+  // Tryb API — prawdziwy streaming tokenów od wybranego dostawcy.
+  async function apiReply(userText, lang, cfg) {
+    const typing = showTyping();
+    let bubble = null;
+    try {
+      await streamFromAPI(cfg.provider, cfg.key, state.messages.slice(), {
+        system: buildSystemPrompt(lang),
+        onToken: function (t) {
+          if (!bubble) {
+            if (typing.parentNode) typing.remove();
+            bubble = addMessage("bot", "");
+            bubble.classList.add("bubble--streaming");
+          }
+          bubble.textContent += t;
+          scrollToBottom();
+        },
+      });
+      if (typing.parentNode) typing.remove();
+      if (!bubble) {
+        bubble = addMessage("bot", "");
+        bubble.textContent = "(Otrzymano pustą odpowiedź z API.)";
+      }
+      bubble.classList.remove("bubble--streaming");
+      recordMessage("bot", bubble.textContent);
+    } catch (err) {
+      if (typing.parentNode) typing.remove();
+      if (bubble) bubble.classList.remove("bubble--streaming");
+      const eb = bubble || addMessage("bot", "");
+      const msg = apiErrorText(cfg.provider, err, lang);
+      eb.textContent = "";
+      await streamWords(eb, msg);
+      recordMessage("bot", msg);
+    }
   }
 
   /* ----- Wysyłanie wiadomości ----- */
@@ -203,6 +509,7 @@
     if (!text) return;
 
     addMessage("user", text);
+    recordMessage("user", text);
     dom.input.value = "";
     autoResize();
 
@@ -237,12 +544,118 @@
     );
   }
 
+  /* ----- Modale ----- */
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (m) m.hidden = false;
+  }
+  function closeModal(id) {
+    const m = document.getElementById(id);
+    if (m) m.hidden = true;
+  }
+
+  // Treść ostrzeżeń CORS uzupełniana jest w kroku „fix: ostrzeżenia CORS”.
+  function updateProviderWarning(/* provider */) {
+    const el = $("#provider-warning");
+    if (!el) return;
+    el.hidden = true;
+    el.innerHTML = "";
+  }
+
+  /* ----- Panel ustawień (tryb API) ----- */
+  function initSettings() {
+    const btn = $("#settings-btn");
+    const modal = $("#settings-modal");
+    if (!btn || !modal) return;
+
+    const providerSel = $("#provider-select");
+    const keyField = $("#api-key-field");
+    const keyInput = $("#api-key-input");
+    const keyToggle = $("#api-key-toggle");
+    const saveBtn = $("#api-save");
+    const clearBtn = $("#api-clear");
+    const statusEl = $("#api-status");
+
+    function setStatus(text, kind) {
+      statusEl.textContent = text || "";
+      statusEl.className = "setting__status" + (kind ? " setting__status--" + kind : "");
+    }
+
+    function reflectProvider() {
+      keyField.hidden = !providerSel.value;
+      updateProviderWarning(providerSel.value);
+    }
+
+    // Wczytaj zapisane wartości z sessionStorage.
+    try {
+      providerSel.value = sessionStorage.getItem(STORAGE.provider) || "";
+      keyInput.value = sessionStorage.getItem(STORAGE.key) || "";
+    } catch (e) {
+      /* ignore */
+    }
+    reflectProvider();
+
+    btn.addEventListener("click", function () {
+      openModal("settings-modal");
+      setStatus("");
+    });
+    modal.addEventListener("click", function (e) {
+      const closer = e.target.closest("[data-close]");
+      if (closer) closeModal(closer.getAttribute("data-close"));
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !modal.hidden) closeModal("settings-modal");
+    });
+    providerSel.addEventListener("change", reflectProvider);
+    keyToggle.addEventListener("click", function () {
+      keyInput.type = keyInput.type === "password" ? "text" : "password";
+    });
+
+    saveBtn.addEventListener("click", function () {
+      const provider = providerSel.value;
+      const key = keyInput.value.trim();
+      try {
+        if (!provider) {
+          sessionStorage.removeItem(STORAGE.provider);
+          sessionStorage.removeItem(STORAGE.key);
+          setStatus("Tryb lokalny (baza wiedzy) jest aktywny.", "ok");
+        } else if (!key) {
+          setStatus("Podaj klucz API albo wybierz tryb lokalny.", "err");
+        } else {
+          sessionStorage.setItem(STORAGE.provider, provider);
+          sessionStorage.setItem(STORAGE.key, key);
+          setStatus(
+            "Zapisano. Tryb API: " + PROVIDERS[provider].label + " — klucz tylko w tej sesji.",
+            "ok"
+          );
+        }
+      } catch (e) {
+        setStatus("Nie udało się zapisać (sessionStorage niedostępny).", "err");
+      }
+    });
+
+    clearBtn.addEventListener("click", function () {
+      providerSel.value = "";
+      keyInput.value = "";
+      try {
+        sessionStorage.removeItem(STORAGE.provider);
+        sessionStorage.removeItem(STORAGE.key);
+      } catch (e) {
+        /* ignore */
+      }
+      reflectProvider();
+      setStatus("Wyczyszczono klucz. Tryb lokalny aktywny.", "ok");
+    });
+  }
+
   /* ----- Inicjalizacja ----- */
   async function init() {
     dom.log = $("#chat-log");
     dom.form = $("#composer");
     dom.input = $("#chat-input");
     dom.send = $("#send-btn");
+
+    initSettings();
 
     if (!dom.log || !dom.form) return; // np. strona demo
 
@@ -267,6 +680,12 @@
     loadKnowledgeBase: loadKnowledgeBase,
     findAnswer: findAnswer,
     escalationText: escalationText,
+    buildSystemPrompt: buildSystemPrompt,
+    streamFromAPI: streamFromAPI,
+    getApiConfig: getApiConfig,
+    apiErrorText: apiErrorText,
+    PROVIDERS: PROVIDERS,
+    STORAGE: STORAGE,
     get knowledgeBase() {
       return kb.data;
     },
