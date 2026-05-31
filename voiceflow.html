@@ -178,24 +178,16 @@
         window.voiceflow.chat.load({
           verify: { projectID: '6a1be20d7b492825fac4e318' },
           url: 'https://general-runtime.voiceflow.com',
-          versionID: 'development'
+          versionID: 'production',
+          autostart: true
+        }).then(function() {
+          window.voiceflow.chat.open();
         });
       }
       v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
-      v.type = 'module';
+      v.type = 'text/javascript';
       s.parentNode.insertBefore(v, s);
     })(document, 'script');
-  </script>
-
-  <!-- Automatyczne otwarcie widgetu po załadowaniu strony -->
-  <script>
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        if (window.voiceflow && window.voiceflow.chat) {
-          window.voiceflow.chat.open();
-        }
-      }, 1500);
-    });
   </script>
 
   <!-- Przycisk „Otwórz asystenta" -->
