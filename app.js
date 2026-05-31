@@ -699,6 +699,55 @@
     el.innerHTML = "";
   }
 
+  /* ----- Tryb ciemny / jasny ----- */
+  const THEME_KEY = "bank_theme";
+  const ICON_MOON =
+    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  const ICON_SUN =
+    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (dom.themeBtn) {
+      const dark = theme === "dark";
+      dom.themeBtn.innerHTML = dark ? ICON_SUN : ICON_MOON;
+      dom.themeBtn.setAttribute("aria-label", dark ? "Włącz tryb jasny" : "Włącz tryb ciemny");
+      dom.themeBtn.title = dark ? "Tryb jasny" : "Tryb ciemny";
+    }
+  }
+
+  function initTheme() {
+    dom.themeBtn = $("#theme-toggle");
+    let theme = document.documentElement.getAttribute("data-theme");
+    if (!theme) {
+      try {
+        theme = localStorage.getItem(THEME_KEY);
+      } catch (e) {
+        /* ignore */
+      }
+      if (!theme) {
+        theme =
+          window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      }
+    }
+    applyTheme(theme);
+
+    if (dom.themeBtn) {
+      dom.themeBtn.addEventListener("click", function () {
+        const next =
+          document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        applyTheme(next);
+        try {
+          localStorage.setItem(THEME_KEY, next);
+        } catch (e) {
+          /* ignore */
+        }
+      });
+    }
+  }
+
   /* ----- Ekran powitalny (pierwsze uruchomienie) ----- */
   const WELCOME_SEEN = "bank_welcome_seen";
 
@@ -831,6 +880,7 @@
     dom.send = $("#send-btn");
     dom.tokenCounter = $("#token-counter");
 
+    initTheme();
     initSettings();
     initWelcome();
 

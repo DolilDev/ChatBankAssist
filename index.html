@@ -6,6 +6,16 @@
   <meta name="description" content="Asystent obsługi klienta Banku Przykładowego — czat z bazą wiedzy, działa w całości w przeglądarce." />
   <meta name="color-scheme" content="light dark" />
   <title>Bank Przykładowy — Asystent klienta</title>
+  <script>
+    // Ustaw motyw przed renderowaniem, aby uniknąć mignięcia.
+    (function () {
+      try {
+        var t = localStorage.getItem("bank_theme");
+        if (!t) t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -25,6 +35,9 @@
       </div>
       <div class="toolbar" id="toolbar">
         <span class="token-counter" id="token-counter" title="Szacunkowa liczba tokenów zużytych w tej rozmowie" aria-live="polite" hidden>~0 tok</span>
+        <button type="button" class="tool-btn" id="theme-toggle" aria-label="Przełącz motyw" title="Tryb ciemny / jasny">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
         <button type="button" class="tool-btn" id="settings-btn" aria-label="Ustawienia" title="Ustawienia (tryb API)">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3" />

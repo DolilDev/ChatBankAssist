@@ -6,6 +6,7 @@
 
 /* ----- Zmienne motywu (jasny) ----- */
 :root {
+  color-scheme: light;
   --bg: #f3f6fb;
   --surface: #ffffff;
   --surface-2: #eef2f8;
@@ -30,6 +31,54 @@
 
   --header-h: 60px;
   --max-w: 820px;
+}
+
+/* ----- Zmienne motywu (ciemny) ----- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --surface: #131c2e;
+  --surface-2: #1b2740;
+  --text: #e7edf6;
+  --text-muted: #93a1b8;
+  --border: #26344f;
+
+  --navy: #0a1322;
+  --navy-700: #13233f;
+  --accent: #4f8cff;
+  --accent-hover: #3b7bff;
+
+  --user-bubble: #2563eb;
+  --user-text: #ffffff;
+  --bot-bubble: #18233a;
+  --bot-text: #e7edf6;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow: 0 10px 30px rgba(0, 0, 0, .55);
+}
+
+:root[data-theme="dark"] .notice--warn {
+  background: #3a2a16;
+  border-color: #7c4a1e;
+  color: #f3c693;
+}
+
+:root[data-theme="dark"] .notice--info {
+  background: #16263f;
+  border-color: #2c456e;
+  color: #a8c7ff;
+}
+
+:root[data-theme="dark"] .rate-btn--up.is-active {
+  background: #10331f;
+  color: #6ee7a8;
+  border-color: #2e7d52;
+}
+
+:root[data-theme="dark"] .rate-btn--down.is-active {
+  background: #3a1b1b;
+  color: #ff9b9b;
+  border-color: #8a3a3a;
 }
 
 /* ----- Reset / baza ----- */
