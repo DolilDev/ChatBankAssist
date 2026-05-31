@@ -48,11 +48,6 @@
     }
     .vf-h2:first-of-type { margin-top: 4px; }
 
-    /* ----- Akcja: otwórz asystenta ----- */
-    .vf-actions {
-      margin: 18px 0 4px;
-    }
-
     /* ----- Tabela porównania kod vs no-code ----- */
     .compare-wrap {
       border: 1px solid var(--border);
@@ -149,14 +144,16 @@
           chatbotów produkcyjnych.
         </p>
 
-        <div class="notice notice--info">
-          Asystent otwiera się automatycznie jako okno czatu w prawym dolnym rogu strony. Można go
-          też otworzyć przyciskiem poniżej. Treści i logika odpowiadają wersji kodowej dostępnej
-          w głównym czacie.
-        </div>
-
-        <div class="vf-actions">
-          <button type="button" id="open-chat-btn" class="btn btn--primary">Otwórz asystenta</button>
+        <h2 class="vf-h2">Asystent</h2>
+        <div style="width:100%; max-width:480px; height:650px; margin:0 auto; border-radius:12px; overflow:hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
+          <iframe
+            src="https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft"
+            title="Czat Voiceflow — asystent Banku"
+            width="100%"
+            height="100%"
+            style="border:none;"
+            allow="microphone">
+          </iframe>
         </div>
 
         <h2 class="vf-h2">Kod a no-code</h2>
@@ -191,40 +188,6 @@
       </div>
     </main>
   </div>
-
-  <!-- Widget Voiceflow (osadzony przez oficjalny embed) -->
-  <script type="text/javascript">
-    (function(d, t) {
-      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-      v.onload = function() {
-        window.voiceflow.chat.load({
-          verify: { projectID: '6a1be20d7b492825fac4e318' },
-          url: 'https://general-runtime.voiceflow.com',
-          versionID: 'main',
-          voice: {
-            url: "https://runtime-api.voiceflow.com"
-          },
-          assistant: {
-            persistence: 'memory'
-          }
-        }).then(function() {
-          setTimeout(function() {
-            window.voiceflow.chat.open();
-          }, 500);
-        });
-      }
-      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-      v.type = "text/javascript";
-      s.parentNode.insertBefore(v, s);
-    })(document, 'script');
-  </script>
-
-  <!-- Przycisk „Otwórz asystenta" -->
-  <script>
-    document.getElementById('open-chat-btn').addEventListener('click', function() {
-      window.voiceflow.chat.open();
-    });
-  </script>
 
   <!-- Przełącznik motywu (samodzielny, spójny z resztą projektu) -->
   <script>
