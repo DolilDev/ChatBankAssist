@@ -26,7 +26,6 @@ Banki obsługują tysiące powtarzalnych zapytań dziennie (otwieranie konta, cz
 
 - odpowiada natychmiast na najczęstsze pytania na podstawie zweryfikowanej bazy wiedzy,
 - eskaluje sprawę do konsultanta, gdy nie zna pewnej odpowiedzi, zamiast ją zmyślać,
-- nie wymaga infrastruktury serwerowej,
 - współpracuje z dowolnym modelem LLM bez zmian w kodzie.
 
 Jest to kompletny, produkcyjnie wyglądający przykład podejścia „static-first" — cała logika po stronie klienta, deployment w pełni zautomatyzowany.
@@ -145,7 +144,16 @@ Pytanie spoza bazy wiedzy (np. „Czy oferujecie ubezpieczenie na życie?") skut
 
 ---
 
-## Struktura plików
+## Architektura
+
+Aplikacja ma architekturę static-first — całość wykonuje się po stronie przeglądarki, w czterech wyraźnie rozdzielonych warstwach:
+
+- **Warstwa prezentacji** — `index.html` (główny czat), `demo.html` (szybki test) i `voiceflow.html` (wariant no-code) oraz wspólny arkusz `style.css` (motywy, responsywność).
+- **Rdzeń logiki** — `app.js` udostępnia moduł `window.BankBot`: normalizację języka, dopasowanie do bazy wiedzy, eskalację i integrację z modelem LLM.
+- **Baza wiedzy** — `knowledge_base.json` jest jedynym źródłem prawdy; `knowledge_base.md` jest z niego generowany skryptem.
+- **Jakość i build** — testy jednostkowe w katalogu `test/` oraz pipeline CI/CD w `.github/workflows/deploy.yml`.
+
+Struktura plików:
 
 ```
 index.html              # główna aplikacja czatu
