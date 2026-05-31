@@ -372,6 +372,48 @@ body {
   text-align: center;
 }
 
+/* ----- Strona demo ----- */
+.tool-link {
+  color: rgba(255, 255, 255, .85);
+  font-size: .8rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.tool-link:hover {
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+}
+
+.demo-panel {
+  flex: 0 0 auto;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.demo-panel__lead {
+  margin: 0 0 12px;
+  font-size: .82rem;
+  color: var(--text-muted);
+}
+
+.demo-panel__row {
+  display: flex;
+  gap: 12px;
+}
+
+.demo-panel__row .field {
+  flex: 1 1 0;
+  margin-bottom: 0;
+}
+
+@media (max-width: 560px) {
+  .demo-panel__row { flex-direction: column; gap: 10px; }
+}
+
 /* ----- Licznik tokenów ----- */
 .token-counter {
   font-size: .72rem;
