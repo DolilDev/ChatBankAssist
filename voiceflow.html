@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Brak meta CSP celowo: widget Voiceflow używa połączeń WebSocket (wss://),
-       a meta-tagowy CSP blokował je na tej stronie. Strona nie obsługuje kluczy API
-       ani danych użytkownika, więc nie wymaga restrykcyjnego CSP jak index.html/demo.html. -->
+  <!-- Brak meta CSP celowo: strona osadza zewnętrzny czat Voiceflow w iframe i nie
+       obsługuje kluczy API ani danych użytkownika, więc nie wymaga restrykcyjnego CSP
+       jak index.html/demo.html. -->
   <meta name="description" content="Wersja asystenta Banku zbudowana w Voiceflow — platformie no-code do budowy chatbotów produkcyjnych." />
   <meta name="color-scheme" content="light dark" />
   <link rel="icon" href="favicon.ico" sizes="32x32" />
@@ -126,23 +126,6 @@
       margin-top: 2px;
       color: var(--accent);
     }
-
-    /* ----- Tryb ciemny: pole wpisywania widgetu Voiceflow ----- */
-    [data-theme="dark"] .vfrc-chat-input {
-      background-color: #1a2744 !important;
-      color: #ffffff !important;
-      border-color: #334566 !important;
-    }
-
-    [data-theme="dark"] .vfrc-chat-input textarea {
-      background-color: #1a2744 !important;
-      color: #ffffff !important;
-    }
-
-    [data-theme="dark"] .vfrc-chat-input--textarea {
-      background-color: #1a2744 !important;
-      color: #ffffff !important;
-    }
   </style>
 </head>
 <body>
@@ -213,7 +196,7 @@
   </div>
 
   <!-- Pływające okno asystenta (iframe w prawym dolnym rogu) -->
-  <div class="vf-iframe-container">
+  <div class="vf-iframe-container" id="vf-container">
     <iframe
       src="https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft"
       title="Czat Voiceflow — asystent Banku"
