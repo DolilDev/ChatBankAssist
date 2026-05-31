@@ -29,6 +29,9 @@
   --radius: 16px;
   --radius-sm: 10px;
 
+  --scrollbar-thumb: #c3ccdb;
+  --scrollbar-thumb-hover: #a3b0c6;
+
   --header-h: 60px;
   --max-w: 820px;
 }
@@ -55,6 +58,9 @@
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
   --shadow: 0 10px 30px rgba(0, 0, 0, .55);
+
+  --scrollbar-thumb: #33425f;
+  --scrollbar-thumb-hover: #46587e;
 }
 
 :root[data-theme="dark"] .notice--warn {
@@ -196,6 +202,50 @@ body {
   flex-direction: column;
   gap: 14px;
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* ----- Pasek przewijania ----- */
+.chat__log,
+.modal__dialog,
+.composer__input {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.chat__log::-webkit-scrollbar,
+.modal__dialog::-webkit-scrollbar,
+.composer__input::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.chat__log::-webkit-scrollbar-track,
+.modal__dialog::-webkit-scrollbar-track,
+.composer__input::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat__log::-webkit-scrollbar-thumb,
+.modal__dialog::-webkit-scrollbar-thumb,
+.composer__input::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  min-height: 36px;
+}
+
+.chat__log::-webkit-scrollbar-thumb:hover,
+.modal__dialog::-webkit-scrollbar-thumb:hover,
+.composer__input::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+.chat__log::-webkit-scrollbar-corner,
+.modal__dialog::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* ----- Bańki wiadomości ----- */
