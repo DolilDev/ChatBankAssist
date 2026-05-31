@@ -179,12 +179,11 @@
           verify: { projectID: '6a1be20d7b492825fac4e318' },
           url: 'https://general-runtime.voiceflow.com',
           versionID: 'production',
-          autostart: true
-        }).then(function() {
-          window.voiceflow.chat.open();
+          launch: { autostart: true }
         });
+        window.voiceflow.chat.open();
       }
-      v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
+      v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
       v.type = 'text/javascript';
       s.parentNode.insertBefore(v, s);
     })(document, 'script');
