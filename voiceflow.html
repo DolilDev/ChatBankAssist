@@ -58,26 +58,20 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 380px;
-      height: 620px;
+      width: 0;
+      height: 0;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
       z-index: 9999;
-      background: transparent;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.2s;
+      transition: width 0.2s, height 0.2s;
     }
     .vf-iframe-container.open {
-      visibility: visible;
-      opacity: 1;
-    }
-    .vf-iframe-container iframe {
-      background: transparent;
+      width: 380px;
+      height: 620px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
     @media (max-width: 440px) {
-      .vf-iframe-container {
+      .vf-iframe-container.open {
         width: calc(100vw - 24px);
         height: 70vh;
         right: 12px;
