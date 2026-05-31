@@ -282,10 +282,19 @@
     if (kb.data && kb.data.escalation) {
       return kb.data.escalation[lang] || kb.data.escalation.pl;
     }
-    return "Przekazuję sprawę do konsultanta. Zadzwoń na infolinię 800 123 456.";
+    return "Dziękuję za kontakt. Ta sprawa wymaga interwencji konsultanta. Proszę skorzystać z jednej z poniższych form kontaktu.";
   }
 
   /* ----- Tryb API: instrukcja systemowa ugruntowana w bazie wiedzy ----- */
+  const TONE_PL =
+    'TON I STYL KOMUNIKACJI (obowiązkowe, bez wyjątków):\n' +
+    '- Zawsze zwracaj się do klienta per "Pan/Pani" lub używaj form bezosobowych ("można", "należy", "jest możliwe").\n' +
+    '- Nigdy nie używaj: "cześć", "hej", "siema", "super", "świetnie", "spoko", "ok", "okej", "jasne".\n' +
+    '- Zamiast tego używaj: "Dzień dobry", "Oczywiście", "Rozumiem", "Chętnie pomogę", "Dziękuję za kontakt".\n' +
+    '- Zdania kończ uprzejmie, np. "Czy mogę pomóc w czymś jeszcze?"\n' +
+    '- Unikaj wykrzykników i emoji w odpowiedziach.\n' +
+    '- Ton: profesjonalny, rzeczowy, ciepły — jak pracownik banku przy okienku.\n\n';
+
   function buildSystemPrompt(lang) {
     const bank = (kb.data && kb.data.meta && kb.data.meta.bank) || "Bank";
     let ctx = "";
@@ -308,6 +317,7 @@
       );
     }
     return (
+      TONE_PL +
       "Jesteś asystentem obsługi klienta banku „" + bank + "” (polski bank detaliczny). " +
       "Odpowiadaj WYŁĄCZNIE na podstawie poniższej bazy wiedzy FAQ. Bądź zwięzły, profesjonalny i uprzejmy. " +
       "Jeśli pytanie nie jest objęte bazą wiedzy, napisz, że nie masz pewnej odpowiedzi i przekazujesz sprawę " +
@@ -900,8 +910,7 @@
   function greet() {
     addMessage(
       "bot",
-      "Dzień dobry! Jestem asystentem Banku. W czym mogę pomóc? " +
-        "Możesz zapytać np. o otwieranie konta, przelewy, karty czy bezpieczeństwo."
+      "Dzień dobry. Jestem wirtualnym asystentem banku. W czym mogę Panu/Pani pomóc?"
     );
   }
 

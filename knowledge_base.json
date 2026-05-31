@@ -44,8 +44,8 @@
     }
   },
   "escalation": {
-    "pl": "Niestety nie mam pewnej odpowiedzi na to pytanie. Przekazuję sprawę do konsultanta. Możesz też zadzwonić na infolinię 800 123 456 (pon.–pt. 8:00–20:00) lub napisać na kontakt@bank.pl.",
-    "en": "I'm sorry, I don't have a reliable answer to that. I'm escalating this to a human consultant. You can also call our helpline at +48 800 123 456 (Mon–Fri 8:00–20:00) or email kontakt@bank.pl."
+    "pl": "Dziękuję za kontakt. Ta sprawa wymaga interwencji konsultanta. Proszę skorzystać z jednej z poniższych form kontaktu: infolinia 800 123 456 (pon.–pt. 8:00–20:00) lub adres e-mail kontakt@bank.pl.",
+    "en": "Thank you for contacting us. This matter requires the assistance of a consultant. Please use one of the contact options below: helpline +48 800 123 456 (Mon–Fri 8:00–20:00) or email kontakt@bank.pl."
   },
   "entries": [
     {
