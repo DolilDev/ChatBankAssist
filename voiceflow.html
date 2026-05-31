@@ -178,21 +178,17 @@
         window.voiceflow.chat.load({
           verify: { projectID: '6a1be20d7b492825fac4e318' },
           url: 'https://general-runtime.voiceflow.com',
-          versionID: 'production'
+          voice: {
+            url: "https://runtime-api.voiceflow.com"
+          }
         }).then(function() {
           setTimeout(function() {
             window.voiceflow.chat.open();
-            setTimeout(function() {
-              window.voiceflow.chat.interact({
-                type: 'launch',
-                payload: {}
-              });
-            }, 800);
           }, 500);
         });
       }
-      v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
-      v.type = 'text/javascript';
+      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+      v.type = "text/javascript";
       s.parentNode.insertBefore(v, s);
     })(document, 'script');
   </script>
