@@ -200,20 +200,24 @@
           versionID: 'main',
           voice: {
             url: "https://runtime-api.voiceflow.com"
-          },
-          assistant: {
-            persistence: 'none'
           }
         }).then(function() {
-          setTimeout(function() {
-            window.voiceflow.chat.open();
+          window.voiceflow.chat.destroy();
+          window.voiceflow.chat.load({
+            verify: { projectID: '6a1be20d7b492825fac4e318' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'main',
+            voice: {
+              url: "https://runtime-api.voiceflow.com"
+            }
+          }).then(function() {
             setTimeout(function() {
-              window.voiceflow.chat.interact({
-                type: 'launch',
-                payload: {}
-              });
-            }, 800);
-          }, 500);
+              window.voiceflow.chat.open();
+              setTimeout(function() {
+                window.voiceflow.chat.interact({ type: 'launch', payload: {} });
+              }, 800);
+            }, 500);
+          });
         });
       }
       v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
