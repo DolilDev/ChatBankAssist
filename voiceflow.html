@@ -43,6 +43,17 @@
     }
     .vf-h2:first-of-type { margin-top: 4px; }
 
+    /* ----- Osadzony czat (fallback iframe) ----- */
+    .vf-embed {
+      display: block;
+      width: 100%;
+      height: 700px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+    }
+
     /* ----- Tabela porównania kod vs no-code ----- */
     .compare-wrap {
       border: 1px solid var(--border);
@@ -123,9 +134,20 @@
         </p>
 
         <div class="notice notice--info">
-          Asystent uruchamia się jako okno czatu w prawym dolnym rogu strony. Treści i logika
-          odpowiadają wersji kodowej dostępnej w głównym czacie.
+          Asystent jest osadzony poniżej, a dodatkowo może pojawić się jako okno czatu w prawym
+          dolnym rogu strony. Treści i logika odpowiadają wersji kodowej dostępnej w głównym czacie.
         </div>
+
+        <h2 class="vf-h2">Asystent (osadzony czat)</h2>
+        <iframe
+          class="vf-embed"
+          src="https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft"
+          title="Czat Voiceflow — asystent Banku"
+          width="100%"
+          height="700px"
+          frameborder="0"
+          allow="microphone">
+        </iframe>
 
         <h2 class="vf-h2">Kod a no-code</h2>
         <div class="compare-wrap">
@@ -172,7 +194,7 @@
         });
       }
       v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
-      v.type = 'text/javascript';
+      v.type = 'module';
       s.parentNode.insertBefore(v, s);
     })(document, 'script');
   </script>
