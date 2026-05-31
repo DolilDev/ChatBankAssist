@@ -724,7 +724,7 @@
     }
     dom.tokenCounter.hidden = false;
     const prefix = state.tokensExact ? "" : "~";
-    dom.tokenCounter.textContent = prefix + state.tokens.toLocaleString("pl-PL") + " tok";
+    dom.tokenCounter.textContent = prefix + state.tokens.toLocaleString("pl-PL") + " tokens";
   }
 
   function bumpTokens(n, exact) {
