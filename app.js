@@ -495,7 +495,13 @@
     state.messages = saved;
     saved.forEach(function (m) {
       const bubble = addMessage(m.role, m.text, { ts: m.ts });
-      if (m.role === "bot") addRating(bubble, m);
+      if (m.role !== "bot") return;
+      if (m.escalated) {
+        bubble.classList.add("bubble--escalation");
+        appendEscalationActions(bubble, detectLanguage(m.text));
+      } else {
+        addRating(bubble, m);
+      }
     });
     state.tokens = estimateConversationTokens();
     state.tokensExact = false;
@@ -625,19 +631,72 @@
     }
   }
 
+  /* ----- Eskalacja do konsultanta ----- */
+  const CONTACT = {
+    phone: "800 123 456",
+    phoneHref: "+48800123456",
+    email: "kontakt@bankprzykladowy.pl",
+  };
+  const ICON_PHONE =
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
+  const ICON_MAIL =
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>';
+
+  // Dodaje pod bańką eskalacji przyciski kontaktu (telefon, e-mail).
+  function appendEscalationActions(bubble, lang) {
+    const wrap = bubble.closest ? bubble.closest(".message") : bubble.parentNode;
+    if (!wrap) return;
+    const actions = document.createElement("div");
+    actions.className = "escalation-actions";
+
+    const call = document.createElement("a");
+    call.className = "esc-btn";
+    call.href = "tel:" + CONTACT.phoneHref;
+    call.innerHTML = ICON_PHONE + "<span>" + (lang === "en" ? "Call " : "Zadzwoń: ") + CONTACT.phone + "</span>";
+
+    const mail = document.createElement("a");
+    mail.className = "esc-btn esc-btn--ghost";
+    mail.href = "mailto:" + CONTACT.email;
+    mail.innerHTML = ICON_MAIL + "<span>" + (lang === "en" ? "Email us" : "Napisz e-mail") + "</span>";
+
+    actions.appendChild(call);
+    actions.appendChild(mail);
+
+    const meta = wrap.querySelector(".message__meta");
+    if (meta) wrap.insertBefore(actions, meta);
+    else wrap.appendChild(actions);
+  }
+
+  async function escalate(userText, lang) {
+    const text = escalationText(lang);
+    const typing = showTyping();
+    await delay(450 + Math.random() * 350);
+    typing.remove();
+    const bubble = addMessage("bot", "");
+    bubble.classList.add("bubble--escalation");
+    await streamWords(bubble, text);
+    appendEscalationActions(bubble, lang);
+    const rec = recordMessage("bot", text);
+    rec.escalated = true;
+    saveHistory();
+    bumpTokens(estimateTokens(userText) + estimateTokens(text), false);
+  }
+
   // Tryb lokalny — odpowiedź z bazy wiedzy, symulowany streaming słowo po słowie.
   async function localReply(userText, lang) {
-    let text;
     const match = findAnswer(userText);
-    if (match) {
-      text = match.entry.a[lang] || match.entry.a.pl;
-    } else if (!kb.loaded) {
-      text =
-        "Trwa wczytywanie bazy wiedzy — spróbuj ponownie za chwilę. " +
-        "(Podczas testów lokalnych uruchom stronę przez serwer HTTP, a nie z pliku.)";
-    } else {
-      text = escalationText(lang);
+
+    if (!match && kb.loaded) {
+      // Brak pewnej odpowiedzi → eskalacja do konsultanta.
+      await escalate(userText, lang);
+      return;
     }
+
+    const text = match
+      ? match.entry.a[lang] || match.entry.a.pl
+      : "Trwa wczytywanie bazy wiedzy — spróbuj ponownie za chwilę. " +
+        "(Podczas testów lokalnych uruchom stronę przez serwer HTTP, a nie z pliku.)";
+
     const typing = showTyping();
     await delay(450 + Math.random() * 350);
     typing.remove();

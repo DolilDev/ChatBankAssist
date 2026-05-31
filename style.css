@@ -644,6 +644,57 @@ body {
   display: none;
 }
 
+/* ----- Eskalacja do konsultanta ----- */
+.message--bot .bubble--escalation {
+  background: #fff7ed;
+  border-color: #fdba74;
+  border-left: 4px solid #f59e0b;
+  color: #7c2d12;
+}
+
+:root[data-theme="dark"] .message--bot .bubble--escalation {
+  background: #2a1d0f;
+  border-color: #7c4a1e;
+  border-left-color: #f59e0b;
+  color: #f3d3a8;
+}
+
+.escalation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 2px 0;
+}
+
+.esc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid transparent;
+  transition: background .15s ease;
+}
+
+.esc-btn:hover {
+  background: var(--accent-hover);
+}
+
+.esc-btn--ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--border);
+}
+
+.esc-btn--ghost:hover {
+  background: var(--surface-2);
+}
+
 /* ----- Bańka podsumowania rozmowy ----- */
 .message--bot .bubble--summary {
   background: var(--surface-2);
