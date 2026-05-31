@@ -1,0 +1,23 @@
+/* =========================================================================
+   Bank Przykładowy — Asystent klienta
+   Style bazowe (kolejne moduły dodawane są w następnych krokach)
+   ========================================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
