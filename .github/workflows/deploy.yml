@@ -52,8 +52,8 @@ jobs:
 
       - name: Minify CSS and JS
         run: |
-          npx --yes terser@5 app.js --compress --mangle --output dist/app.js
-          npx --yes csso-cli@5 style.css --output dist/style.css
+          npx --yes -p terser@5 terser app.js --compress --mangle --output dist/app.js
+          npx --yes -p csso-cli@5 csso style.css --output dist/style.css
           echo "Rozmiary źródłowe vs zminifikowane:"
           ls -l app.js dist/app.js style.css dist/style.css
 
