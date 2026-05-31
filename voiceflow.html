@@ -48,6 +48,32 @@
     }
     .vf-h2:first-of-type { margin-top: 4px; }
 
+    /* ----- Akcja: otwórz asystenta ----- */
+    .vf-actions {
+      margin: 18px 0 4px;
+    }
+
+    /* ----- Pływające okno asystenta (prawy dolny róg) ----- */
+    .vf-iframe-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 380px;
+      height: 620px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      z-index: 9999;
+    }
+    @media (max-width: 440px) {
+      .vf-iframe-container {
+        width: calc(100vw - 24px);
+        height: 70vh;
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+
     /* ----- Tabela porównania kod vs no-code ----- */
     .compare-wrap {
       border: 1px solid var(--border);
@@ -144,16 +170,8 @@
           chatbotów produkcyjnych.
         </p>
 
-        <h2 class="vf-h2">Asystent</h2>
-        <div style="width:100%; max-width:480px; height:650px; margin:0 auto; border-radius:12px; overflow:hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3);">
-          <iframe
-            src="https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft"
-            title="Czat Voiceflow — asystent Banku"
-            width="100%"
-            height="100%"
-            style="border:none;"
-            allow="microphone">
-          </iframe>
+        <div class="vf-actions">
+          <button type="button" id="open-chat-btn" class="btn btn--primary">Otwórz asystenta</button>
         </div>
 
         <h2 class="vf-h2">Kod a no-code</h2>
@@ -188,6 +206,31 @@
       </div>
     </main>
   </div>
+
+  <!-- Pływające okno asystenta (iframe w prawym dolnym rogu) -->
+  <div class="vf-iframe-container" style="display:none;">
+    <iframe
+      src="https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft"
+      title="Czat Voiceflow — asystent Banku"
+      width="100%"
+      height="100%"
+      style="border:none;"
+      allow="microphone">
+    </iframe>
+  </div>
+
+  <!-- Pokaż/ukryj pływające okno asystenta -->
+  <script>
+    document.getElementById('open-chat-btn').addEventListener('click', function() {
+      var container = document.querySelector('.vf-iframe-container');
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Na start ukryte, automatyczne otwarcie po 500 ms.
+    setTimeout(function() {
+      document.querySelector('.vf-iframe-container').style.display = 'block';
+    }, 500);
+  </script>
 
   <!-- Przełącznik motywu (samodzielny, spójny z resztą projektu) -->
   <script>
