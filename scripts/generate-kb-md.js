@@ -4,7 +4,7 @@
    Generator knowledge_base.md z knowledge_base.json.
    Jedno źródło prawdy (JSON) → czytelna dokumentacja (Markdown).
    Uruchom: `npm run kb:md` (albo `node scripts/generate-kb-md.js`).
-   Test test/kb-md-sync.test.js pilnuje, by plik .md nie rozjechał się z .json.
+   Test tests/kb-md-sync.test.js pilnuje, by plik .md nie rozjechał się z .json.
    ========================================================================= */
 const fs = require("node:fs");
 const path = require("node:path");
