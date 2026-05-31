@@ -161,13 +161,20 @@
   </div>
 
   <!-- Widget Voiceflow (osadzony przez oficjalny embed) -->
-  <script type="module">
-    import { createChat } from 'https://cdn.voiceflow.com/agent-utils/latest/agent-utils.mjs';
-    createChat({
-      verify: { projectID: '6a1be20d7b492825fac4e318' },
-      url: 'https://general-runtime.voiceflow.com',
-      versionID: 'production'
-    });
+  <script>
+    (function(d, t) {
+      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+      v.onload = function() {
+        window.voiceflow.chat.load({
+          verify: { projectID: '6a1be20d7b492825fac4e318' },
+          url: 'https://general-runtime.voiceflow.com',
+          versionID: 'production'
+        });
+      }
+      v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
+      v.type = 'text/javascript';
+      s.parentNode.insertBefore(v, s);
+    })(document, 'script');
   </script>
 
   <!-- Przełącznik motywu (samodzielny, spójny z resztą projektu) -->
