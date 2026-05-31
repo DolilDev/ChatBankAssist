@@ -492,27 +492,26 @@
     throw new Error("Nieznany provider: " + provider);
   }
 
-  // Czytelny komunikat błędu trybu API (rozwijany o ostrzeżenia CORS w kolejnym kroku).
+  // Czytelny komunikat błędu trybu API: rozpoznaje limit zapytań (429),
+  // odrzucony klucz (401/403) oraz blokadę CORS i dodaje konkretną wskazówkę.
   function apiErrorText(provider, err, lang) {
     const raw = (err && err.message) || String(err);
-    const corsLikely = /Failed to fetch|NetworkError|Load failed|CORS/i.test(raw);
     const name = (PROVIDERS[provider] && PROVIDERS[provider].label) || provider;
+    const rateLimited = /\b429\b|RESOURCE_EXHAUSTED|rate limit|quota/i.test(raw);
+    const authFailed = /\b401\b|\b403\b|API key not valid|API_KEY_INVALID|PERMISSION_DENIED|unauthorized/i.test(raw);
+    const corsLikely = /Failed to fetch|NetworkError|Load failed|CORS/i.test(raw);
+
+    let hint = "";
     if (lang === "en") {
-      return (
-        "Could not reach the " + name + " API. " +
-        (corsLikely
-          ? "The browser most likely blocked the request (CORS). Gemini is the recommended provider for in-browser use. "
-          : "") +
-        "Details: " + raw
-      );
+      if (rateLimited) hint = "API request limit reached (429). Wait a minute and try again, or use local mode (no key). ";
+      else if (authFailed) hint = "The API key was rejected (invalid or lacking permissions). Check it in Settings. ";
+      else if (corsLikely) hint = "The browser most likely blocked the request (CORS). Gemini is the recommended provider for in-browser use. ";
+      return "Could not reach the " + name + " API. " + hint + "Details: " + raw;
     }
-    return (
-      "Nie udało się połączyć z API " + name + ". " +
-      (corsLikely
-        ? "Najprawdopodobniej przeglądarka zablokowała request (CORS). Do pracy w przeglądarce zalecany jest Gemini. "
-        : "") +
-      "Szczegóły: " + raw
-    );
+    if (rateLimited) hint = "Przekroczono limit zapytań do API (429). Odczekaj kilkadziesiąt sekund i spróbuj ponownie albo skorzystaj z trybu lokalnego (bez klucza). ";
+    else if (authFailed) hint = "Klucz API został odrzucony (nieprawidłowy lub bez uprawnień). Sprawdź go w Ustawieniach. ";
+    else if (corsLikely) hint = "Najprawdopodobniej przeglądarka zablokowała request (CORS). Do pracy w przeglądarce zalecany jest Gemini. ";
+    return "Nie udało się połączyć z API " + name + ". " + hint + "Szczegóły: " + raw;
   }
 
   function scrollToBottom() {

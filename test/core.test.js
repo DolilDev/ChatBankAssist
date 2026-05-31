@@ -90,6 +90,18 @@ test("escalationText zwraca komunikat w obu językach", function () {
   assert.match(BankBot.escalationText("en"), /consultant/i);
 });
 
+/* ----- apiErrorText: czytelne komunikaty błędów API ----- */
+test("apiErrorText rozpoznaje limit (429), błędny klucz i CORS", function () {
+  const rl = BankBot.apiErrorText("gemini", new Error("Gemini API 429: RESOURCE_EXHAUSTED"), "pl");
+  assert.match(rl, /limit zapyta|429/i);
+  const auth = BankBot.apiErrorText("gemini", new Error("Gemini API 400: API key not valid"), "pl");
+  assert.match(auth, /klucz/i);
+  const cors = BankBot.apiErrorText("openai", new Error("Failed to fetch"), "pl");
+  assert.match(cors, /CORS/i);
+  const rlEn = BankBot.apiErrorText("gemini", new Error("Gemini API 429: quota"), "en");
+  assert.match(rlEn, /limit|429/i);
+});
+
 /* ----- buildSystemPrompt ----- */
 test("buildSystemPrompt zawiera nazwę banku i bazę wiedzy", function () {
   const sys = BankBot.buildSystemPrompt("pl");
