@@ -323,6 +323,23 @@ body {
   text-align: center;
 }
 
+/* ----- Licznik tokenów ----- */
+.token-counter {
+  font-size: .72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, .82);
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.token-counter[hidden] {
+  display: none;
+}
+
 /* ----- Przyciski narzędziowe w nagłówku ----- */
 .tool-btn {
   display: grid;

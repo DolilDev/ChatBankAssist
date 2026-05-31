@@ -12,6 +12,8 @@
   const state = {
     busy: false, // true gdy bot generuje odpowiedź
     messages: [], // historia rozmowy [{ role, text, ts }]
+    tokens: 0, // licznik tokenów w bieżącej rozmowie
+    tokensExact: false, // true gdy oparte na rzeczywistym zużyciu z API
   };
 
   /* ----- Konfiguracja trybu API ----- */
@@ -461,6 +463,9 @@
       const bubble = addMessage(m.role, m.text, { ts: m.ts });
       if (m.role === "bot") addRating(bubble, m);
     });
+    state.tokens = estimateConversationTokens();
+    state.tokensExact = false;
+    renderTokens();
     return true;
   }
 
@@ -471,6 +476,7 @@
     } catch (e) {
       /* ignore */
     }
+    resetTokens();
   }
 
   /* ----- Ocena odpowiedzi (thumbs up / down) ----- */
@@ -520,6 +526,43 @@
     reflect();
   }
 
+  /* ----- Licznik tokenów ----- */
+  // Przybliżenie: ~4 znaki na token (heurystyka jak w popularnych tokenizerach).
+  function estimateTokens(text) {
+    if (!text) return 0;
+    return Math.max(1, Math.round(String(text).trim().length / 4));
+  }
+
+  function estimateConversationTokens() {
+    return state.messages.reduce(function (sum, m) {
+      return sum + estimateTokens(m.text);
+    }, 0);
+  }
+
+  function renderTokens() {
+    if (!dom.tokenCounter) return;
+    if (state.tokens <= 0) {
+      dom.tokenCounter.hidden = true;
+      return;
+    }
+    dom.tokenCounter.hidden = false;
+    const prefix = state.tokensExact ? "" : "~";
+    dom.tokenCounter.textContent = prefix + state.tokens.toLocaleString("pl-PL") + " tok";
+  }
+
+  function bumpTokens(n, exact) {
+    if (!n) return;
+    state.tokens += n;
+    if (exact) state.tokensExact = true;
+    renderTokens();
+  }
+
+  function resetTokens() {
+    state.tokens = 0;
+    state.tokensExact = false;
+    renderTokens();
+  }
+
   /* ----- Odpowiedź bota: tryb lokalny (baza wiedzy) albo tryb API ----- */
   async function botReply(userText) {
     const lang = "pl"; // wykrywanie języka dodawane w kolejnym kroku
@@ -551,6 +594,7 @@
     await streamWords(bubble, text);
     const rec = recordMessage("bot", text);
     addRating(bubble, rec);
+    bumpTokens(estimateTokens(userText) + estimateTokens(text), false);
   }
 
   // Tryb API — prawdziwy streaming tokenów od wybranego dostawcy.
@@ -558,7 +602,7 @@
     const typing = showTyping();
     let bubble = null;
     try {
-      await streamFromAPI(cfg.provider, cfg.key, state.messages.slice(), {
+      const usage = await streamFromAPI(cfg.provider, cfg.key, state.messages.slice(), {
         system: buildSystemPrompt(lang),
         onToken: function (t) {
           if (!bubble) {
@@ -578,6 +622,11 @@
       bubble.classList.remove("bubble--streaming");
       const rec = recordMessage("bot", bubble.textContent);
       addRating(bubble, rec);
+      if (usage && usage.totalTokens) {
+        bumpTokens(usage.totalTokens, true); // rzeczywiste zużycie z API
+      } else {
+        bumpTokens(estimateTokens(userText) + estimateTokens(bubble.textContent), false);
+      }
     } catch (err) {
       if (typing.parentNode) typing.remove();
       if (bubble) bubble.classList.remove("bubble--streaming");
@@ -780,6 +829,7 @@
     dom.form = $("#composer");
     dom.input = $("#chat-input");
     dom.send = $("#send-btn");
+    dom.tokenCounter = $("#token-counter");
 
     initSettings();
     initWelcome();
