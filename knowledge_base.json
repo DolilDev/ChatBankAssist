@@ -1,7 +1,7 @@
 {
   "meta": {
     "bank": "Bank",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "languages": ["pl", "en"],
     "updated": "2026-05-31"
   },
@@ -29,6 +29,18 @@
     "kontakt": {
       "label": { "pl": "Kontakt", "en": "Contact" },
       "summary": { "pl": "kontaktu", "en": "contact" }
+    },
+    "kredyty": {
+      "label": { "pl": "Kredyty", "en": "Loans" },
+      "summary": { "pl": "kredytów", "en": "loans" }
+    },
+    "oszczednosci": {
+      "label": { "pl": "Oszczędności", "en": "Savings" },
+      "summary": { "pl": "oszczędności", "en": "savings" }
+    },
+    "aplikacja": {
+      "label": { "pl": "Aplikacja mobilna", "en": "Mobile app" },
+      "summary": { "pl": "aplikacji mobilnej", "en": "the mobile app" }
     }
   },
   "escalation": {
@@ -294,6 +306,86 @@
       "a": {
         "pl": "Kartę zastrzeżesz przez całą dobę pod numerem naszej infolinii 800 123 456 lub korzystając z ogólnopolskiego Systemu Zastrzegania Kart: +48 828 828 828 (czynny 24/7, dla kart wszystkich banków). Najszybciej zablokujesz kartę samodzielnie w aplikacji mobilnej.",
         "en": "You can block your card around the clock via our helpline at +48 800 123 456 or using the nationwide Card Reservation System: +48 828 828 828 (open 24/7, for cards from all banks). The fastest option is to freeze the card yourself in the mobile app."
+      }
+    },
+    {
+      "id": "cash-loan",
+      "category": "kredyty",
+      "keywords": ["kredyt gotówkowy", "pożyczka", "pożyczka gotówkowa", "wziąć kredyt", "raty kredytu", "cash loan", "personal loan", "take a loan", "borrow money", "loan installments"],
+      "q": { "pl": "Jak wziąć kredyt gotówkowy?", "en": "How do I take out a personal (cash) loan?" },
+      "a": {
+        "pl": "Wniosek o kredyt gotówkowy złożysz w aplikacji lub bankowości internetowej („Kredyty” → „Wniosek o kredyt”). Podaj kwotę, liczbę rat i dane o dochodach. Po automatycznej ocenie zdolności kredytowej otrzymasz decyzję, a środki zwykle trafiają na konto tego samego dnia. Wysokość oprocentowania i RRSO zależy od kwoty, okresu i Twojej zdolności – dokładną ofertę wyliczysz w kalkulatorze kredytowym.",
+        "en": "You can apply for a cash loan in the app or online banking (\"Loans\" → \"Loan application\"). Provide the amount, the number of installments and your income details. After an automatic creditworthiness check you'll get a decision and the funds usually reach your account the same day. The interest rate and APRC depend on the amount, term and your creditworthiness – calculate the exact offer in the loan calculator."
+      }
+    },
+    {
+      "id": "mortgage",
+      "category": "kredyty",
+      "keywords": ["kredyt hipoteczny", "hipoteka", "kredyt na mieszkanie", "kredyt na dom", "oprocentowanie kredytu hipotecznego", "wkład własny", "mortgage", "home loan", "mortgage rate", "loan for an apartment"],
+      "q": { "pl": "Jak ubiegać się o kredyt hipoteczny?", "en": "How do I apply for a mortgage?" },
+      "a": {
+        "pl": "Kredyt hipoteczny rozpoczniesz od wniosku online lub spotkania z doradcą. Potrzebne będą m.in. dokumenty dochodowe, informacje o nieruchomości oraz wkład własny (zwykle min. 10–20%). Oprocentowanie może być stałe lub zmienne, a ostateczne warunki (marża, RRSO) ustalane są indywidualnie po analizie wniosku – orientacyjną ratę policzysz w kalkulatorze hipotecznym lub u doradcy.",
+        "en": "A mortgage starts with an online application or a meeting with an advisor. You'll need income documents, details of the property and a down payment (usually at least 10–20%). The interest rate can be fixed or variable, and the final terms (margin, APRC) are set individually after your application is reviewed – estimate the installment in the mortgage calculator or with an advisor."
+      }
+    },
+    {
+      "id": "creditworthiness",
+      "category": "kredyty",
+      "keywords": ["zdolność kredytowa", "ocena zdolności", "czy dostanę kredyt", "bik", "historia kredytowa", "creditworthiness", "credit score", "credit history", "will I get a loan"],
+      "q": { "pl": "Od czego zależy zdolność kredytowa?", "en": "What affects my creditworthiness?" },
+      "a": {
+        "pl": "Zdolność kredytowa zależy m.in. od wysokości i stabilności dochodów, comiesięcznych zobowiązań, liczby osób na utrzymaniu oraz historii w BIK. Przed złożeniem wniosku możesz wstępnie sprawdzić szacowaną kwotę w kalkulatorze zdolności kredytowej. Terminowa spłata zobowiązań i brak nadmiernej liczby kredytów podnoszą Twoją zdolność.",
+        "en": "Creditworthiness depends on, among others, the level and stability of your income, your monthly liabilities, the number of dependants and your credit history at the credit bureau (BIK). Before applying you can pre-check an estimated amount in the creditworthiness calculator. Repaying obligations on time and avoiding too many loans improves your capacity."
+      }
+    },
+    {
+      "id": "savings-account",
+      "category": "oszczednosci",
+      "keywords": ["konto oszczędnościowe", "oszczędzanie", "odkładanie pieniędzy", "oprocentowanie oszczędności", "savings account", "saving money", "interest on savings"],
+      "q": { "pl": "Czym jest konto oszczędnościowe i jak je założyć?", "en": "What is a savings account and how do I open one?" },
+      "a": {
+        "pl": "Konto oszczędnościowe to rachunek, na którym odkładasz pieniądze z dostępem do nich w każdej chwili, a środki są oprocentowane. Założysz je w kilka chwil w aplikacji („Oszczędności” → „Otwórz konto oszczędnościowe”). Z konta oszczędnościowego zwykle jeden przelew w miesiącu jest bezpłatny; kolejne mogą być płatne zgodnie z Tabelą Opłat. Aktualne oprocentowanie znajdziesz na stronie oferty.",
+        "en": "A savings account is an account where you set money aside with access to it at any time, and the balance earns interest. You can open one in moments in the app (\"Savings\" → \"Open savings account\"). Usually one transfer per month from a savings account is free; further ones may be charged per the Table of Fees. You'll find the current interest rate on the offer page."
+      }
+    },
+    {
+      "id": "term-deposit",
+      "category": "oszczednosci",
+      "keywords": ["lokata", "lokata terminowa", "założyć lokatę", "oprocentowanie lokaty", "zerwanie lokaty", "term deposit", "fixed deposit", "open a deposit", "deposit interest"],
+      "q": { "pl": "Jak założyć lokatę terminową?", "en": "How do I open a term deposit?" },
+      "a": {
+        "pl": "Lokatę założysz w aplikacji lub bankowości internetowej („Oszczędności” → „Załóż lokatę”): wybierasz kwotę, okres (np. 3, 6 lub 12 miesięcy) i rodzaj oprocentowania (stałe lub zmienne). Odsetki naliczane są po zakończeniu okresu lokaty. Lokatę możesz zerwać przed terminem, ale wiąże się to zwykle z utratą części lub całości naliczonych odsetek.",
+        "en": "You can open a term deposit in the app or online banking (\"Savings\" → \"Open deposit\"): choose the amount, the term (e.g. 3, 6 or 12 months) and the interest type (fixed or variable). Interest is paid at the end of the deposit term. You can break a deposit early, but this usually means losing part or all of the accrued interest."
+      }
+    },
+    {
+      "id": "download-app",
+      "category": "aplikacja",
+      "keywords": ["pobrać aplikację", "zainstalować aplikację", "aplikacja mobilna", "apka", "gdzie pobrać aplikację", "app store", "google play", "download app", "install app", "get the app"],
+      "q": { "pl": "Jak pobrać i zainstalować aplikację mobilną?", "en": "How do I download and install the mobile app?" },
+      "a": {
+        "pl": "Aplikację mobilną banku pobierzesz bezpłatnie z Google Play (Android) lub App Store (iOS) – wyszukaj nazwę banku i sprawdź, czy wydawcą jest oficjalnie nasz bank. Po instalacji zaloguj się danymi do bankowości internetowej i aktywuj aplikację kodem SMS. Pobieraj aplikację wyłącznie z oficjalnych sklepów, nigdy z linków przesłanych e-mailem lub SMS-em.",
+        "en": "You can download the bank's mobile app for free from Google Play (Android) or the App Store (iOS) – search for the bank's name and check that the publisher is officially our bank. After installing, log in with your online banking credentials and activate the app with an SMS code. Only download the app from the official stores, never from links sent by email or SMS."
+      }
+    },
+    {
+      "id": "app-login-issues",
+      "category": "aplikacja",
+      "keywords": ["aplikacja nie działa", "problem z aplikacją", "aplikacja się zawiesza", "błąd aplikacji", "aplikacja nie wczytuje", "app not working", "app crashes", "app error"],
+      "q": { "pl": "Aplikacja nie działa lub się zawiesza. Co zrobić?", "en": "The app isn't working or keeps crashing. What should I do?" },
+      "a": {
+        "pl": "Najpierw zaktualizuj aplikację do najnowszej wersji i sprawdź połączenie z internetem. Pomaga też ponowne uruchomienie telefonu oraz wyczyszczenie pamięci podręcznej aplikacji. Jeśli zapomniałeś hasła, użyj opcji „Nie pamiętam hasła” na ekranie logowania. Gdy problem nie ustępuje, zadzwoń na infolinię 800 123 456 – pomożemy odblokować dostęp.",
+        "en": "First update the app to the latest version and check your internet connection. Restarting your phone and clearing the app's cache also helps. If you forgot your password, use the \"Forgot password\" option on the login screen. If the problem persists, call the helpline at +48 800 123 456 – we'll help restore your access."
+      }
+    },
+    {
+      "id": "biometric-login",
+      "category": "aplikacja",
+      "keywords": ["logowanie biometryczne", "odcisk palca", "face id", "biometria", "logowanie odciskiem", "biometric login", "fingerprint", "biometrics"],
+      "q": { "pl": "Jak włączyć logowanie biometryczne (odcisk palca / Face ID)?", "en": "How do I enable biometric login (fingerprint / Face ID)?" },
+      "a": {
+        "pl": "Logowanie biometryczne włączysz w aplikacji: „Ustawienia” → „Bezpieczeństwo” → „Logowanie biometryczne”, po wcześniejszym skonfigurowaniu odcisku palca lub Face ID w ustawieniach telefonu. Biometria zastępuje wpisywanie hasła przy logowaniu i autoryzacji, a dane biometryczne pozostają wyłącznie na Twoim urządzeniu – bank ich nie przechowuje.",
+        "en": "You can enable biometric login in the app: \"Settings\" → \"Security\" → \"Biometric login\", after setting up your fingerprint or Face ID in your phone's settings. Biometrics replace typing your password when logging in and authorizing, and your biometric data stays only on your device – the bank does not store it."
       }
     }
   ]

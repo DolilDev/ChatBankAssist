@@ -45,6 +45,9 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Run unit tests
+        run: node --test
+
       - name: Prepare site (dist/)
         run: |
           mkdir -p dist

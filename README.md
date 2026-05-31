@@ -34,7 +34,8 @@ To jednocześnie kompletny, produkcyjnie wyglądający przykład „static-first
 - 💬 **Interfejs czatu** z bańkami wiadomości (użytkownik po prawej, bot po lewej).
 - ⌨️ **Streaming odpowiedzi** słowo po słowie (jak w ChatGPT) z migającym kursorem.
 - ⏳ **Wskaźnik pisania** (animowane kropki) podczas generowania odpowiedzi.
-- 📚 **Baza wiedzy** ładowana z `knowledge_base.json` — bot odpowiada na podstawie jej treści (26 wpisów FAQ).
+- 📚 **Baza wiedzy** ładowana z `knowledge_base.json` — bot odpowiada na podstawie jej treści (34 wpisy FAQ w 9 kategoriach: konta, przelewy, karty, bezpieczeństwo, reklamacje, kontakt, kredyty, oszczędności, aplikacja mobilna).
+- 🔎 **Dopasowanie odporne na język naturalny** — lekki stemming PL (odmiana), tolerancja literówek (Levenshtein ≤ 1) i mostek synonimów PL↔EN, więc „przelewy", „przlew" czy „loan" trafiają w ten sam temat.
 - 🧑‍💼 **Eskalacja do konsultanta** z wyraźnym komunikatem i przyciskami kontaktu (telefon, e-mail), gdy brak pewnej odpowiedzi.
 - 💾 **Historia czatu w sessionStorage** — po odświeżeniu strony rozmowa nie znika.
 - 👍👎 **Ocena odpowiedzi** (thumbs up / down) pod każdą wiadomością bota.
@@ -43,7 +44,12 @@ To jednocześnie kompletny, produkcyjnie wyglądający przykład „static-first
 - 🌍 **Wykrywanie języka** — gdy piszesz po angielsku, bot odpowiada po angielsku.
 - 📋 **Podsumowanie rozmowy** — „Twoje pytania dotyczyły: przelewów, kart".
 - 🔌 **Tryb API** — wybór dostawcy (Gemini / Claude / OpenAI) i własny klucz, przechowywany tylko w `sessionStorage`.
-- 🚀 **CI/CD** — automatyczny deployment na GitHub Pages, minifikacja CSS/JS, walidacja bazy wiedzy i generowanie `sitemap.xml`.
+- 💡 **Chipy z podpowiedziami** — gotowe przykładowe pytania pod polem wpisania, znikają po pierwszej wiadomości.
+- 📤 **Eksport rozmowy** do pliku `.txt` (wraz z ocenami 👍/👎 i podsumowaniem).
+- ♿ **Dostępność (a11y)** — `aria-live` na strumieniu odpowiedzi, pułapka fokusu w modalach, zamykanie `Esc` z powrotem fokusu, widoczny `:focus-visible` dla klawiatury.
+- 🔒 **Nagłówek CSP** (`Content-Security-Policy`) ograniczający źródła skryptów i dozwolone domeny `connect-src` do API dostawców.
+- ✅ **Testy jednostkowe** rdzenia dopasowania (`node --test`) uruchamiane też w CI.
+- 🚀 **CI/CD** — automatyczny deployment na GitHub Pages, testy, minifikacja CSS/JS, walidacja bazy wiedzy i generowanie `sitemap.xml`.
 - 📱 **Responsywność** i czysty, profesjonalny wygląd (granat / biel), bez zewnętrznych frameworków CSS.
 
 ---
@@ -52,7 +58,7 @@ To jednocześnie kompletny, produkcyjnie wyglądający przykład „static-first
 
 Bot ma dwa tryby:
 
-1. **Tryb lokalny (domyślny, bez klucza)** — pytanie jest normalizowane (m.in. polskie znaki) i dopasowywane do wpisów `knowledge_base.json` metodą scoringu słów kluczowych. Jeśli żaden wpis nie przekroczy progu pewności — następuje eskalacja do konsultanta.
+1. **Tryb lokalny (domyślny, bez klucza)** — pytanie jest normalizowane (m.in. polskie znaki), sprowadzane do rdzeni (lekki stemming PL) i dopasowywane do wpisów `knowledge_base.json` metodą scoringu pokrycia słów kluczowych — z tolerancją literówek (Levenshtein ≤ 1) i mostkiem synonimów PL↔EN. Synonimy liczą się jako jedno pojęcie, więc powtórzenia nie zawyżają wyniku. Jeśli żaden wpis nie przekroczy progu pewności — następuje eskalacja do konsultanta.
 2. **Tryb API (opcjonalny, z kluczem)** — pytanie wraz z bazą wiedzy jako kontekstem trafia do wybranego modelu LLM, a odpowiedź jest streamowana token po tokenie. Model jest instruowany, by odpowiadać **wyłącznie na podstawie bazy wiedzy** i eskalować, gdy nie zna odpowiedzi.
 
 ---
@@ -146,6 +152,8 @@ Po polsku:
 - „Dostałem podejrzany SMS z banku, co robić?"
 - „Jak złożyć reklamację i ile trwa jej rozpatrzenie?"
 - „Pod jaki numer dzwonić, żeby zastrzec kartę w nocy?"
+- „Jak wziąć kredyt gotówkowy?" / „Jak założyć lokatę terminową?"
+- „Jak włączyć logowanie biometryczne w aplikacji?"
 
 In English (bot odpowie po angielsku):
 
@@ -155,7 +163,7 @@ In English (bot odpowie po angielsku):
 
 A także coś spoza bazy wiedzy (zobaczysz **eskalację do konsultanta**):
 
-- „Jakie macie oprocentowanie kredytu hipotecznego na 30 lat?"
+- „Czy oferujecie ubezpieczenie na życie?"
 
 ---
 
@@ -166,15 +174,38 @@ index.html              # główna aplikacja czatu
 demo.html               # strona demo z polem na klucz API
 style.css               # style (granat/biel, tryb ciemny, responsywność)
 app.js                  # cała logika (rdzeń window.BankBot)
-knowledge_base.json     # baza wiedzy FAQ (26 wpisów, PL + EN)
+knowledge_base.json     # baza wiedzy FAQ (34 wpisy, PL + EN) — JEDYNE źródło prawdy
+knowledge_base.md       # czytelna wersja bazy (generowana z JSON)
+scripts/
+  └── generate-kb-md.js  # generator knowledge_base.md z JSON (npm run kb:md)
+test/
+  ├── harness.js         # ładuje window.BankBot w Node (atrapy DOM/fetch)
+  ├── core.test.js       # testy dopasowania: stemming, literówki, synonimy, eskalacja
+  └── kb-md-sync.test.js # pilnuje synchronizacji .md ↔ .json
+package.json            # skrypty: `npm test`, `npm run kb:md`
 docs/preview.svg        # podgląd interfejsu (do README)
 .github/workflows/
-  └── deploy.yml         # CI/CD: walidacja → minifikacja → sitemap → deploy
+  └── deploy.yml         # CI/CD: walidacja → testy → minifikacja → sitemap → deploy
 .gitignore
 README.md
 ```
 
 > `sitemap.xml`, `robots.txt` oraz katalog `dist/` powstają automatycznie w trakcie deploymentu i nie są trzymane w repozytorium.
+
+---
+
+## ✅ Testy i jakość
+
+Logika dopasowania jest czysta i testowalna **bez przeglądarki** — harness podstawia minimalne atrapy DOM i ładuje rdzeń `window.BankBot` w Node.
+
+```bash
+npm test          # node --test — testy rdzenia + synchronizacja bazy wiedzy
+npm run kb:md     # regeneracja knowledge_base.md z knowledge_base.json
+```
+
+Testy obejmują: normalizację i wykrywanie języka, niezmiennik „każde pytanie z bazy znajduje odpowiedź", jednoznaczne dopasowania, odmianę/literówki/synonimy oraz eskalację dla pytań spoza bazy. **`knowledge_base.json` jest jedynym źródłem prawdy** — `knowledge_base.md` generuje się z niego, a osobny test nie pozwala im się rozjechać (po edycji bazy uruchom `npm run kb:md`).
+
+**Dostępność i bezpieczeństwo:** treści użytkownika i bota renderowane są przez `textContent` (brak wstrzyknięć HTML), `innerHTML` używane tylko dla statycznych ikon. Strony wysyłają nagłówek `Content-Security-Policy`, a modale mają pułapkę fokusu i obsługę `Esc`.
 
 ---
 

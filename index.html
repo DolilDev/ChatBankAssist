@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://generativelanguage.googleapis.com https://api.openai.com https://api.anthropic.com; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="description" content="Asystent obsługi klienta Banku — czat z bazą wiedzy, działa w całości w przeglądarce." />
   <meta name="color-scheme" content="light dark" />
   <title>Bank — Asystent klienta</title>
@@ -41,6 +42,9 @@
         <button type="button" class="tool-btn" id="newchat-btn" aria-label="Nowa rozmowa" title="Nowa rozmowa">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 8v6M9 11h6"/></svg>
         </button>
+        <button type="button" class="tool-btn" id="export-btn" aria-label="Eksportuj rozmowę" title="Eksportuj rozmowę do pliku">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        </button>
         <button type="button" class="tool-btn" id="theme-toggle" aria-label="Przełącz motyw" title="Tryb ciemny / jasny">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
@@ -58,6 +62,7 @@
     </main>
 
     <footer class="composer">
+      <div class="suggestions" id="suggestions" aria-label="Przykładowe pytania" hidden></div>
       <form class="composer__form" id="composer" autocomplete="off">
         <label class="visually-hidden" for="chat-input">Twoja wiadomość</label>
         <textarea
@@ -81,7 +86,7 @@
   <!-- Ekran powitalny (pierwsze uruchomienie) -->
   <div class="modal" id="welcome-modal" hidden>
     <div class="modal__backdrop" data-close="welcome-modal"></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="welcome-title" tabindex="-1">
       <header class="modal__head">
         <h2 id="welcome-title">👋 Witaj w asystencie banku</h2>
         <button type="button" class="modal__close" data-close="welcome-modal" aria-label="Zamknij">
@@ -114,7 +119,7 @@
   <!-- Panel ustawień (tryb API) -->
   <div class="modal" id="settings-modal" hidden>
     <div class="modal__backdrop" data-close="settings-modal"></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
       <header class="modal__head">
         <h2 id="settings-title">Ustawienia</h2>
         <button type="button" class="modal__close" data-close="settings-modal" aria-label="Zamknij">

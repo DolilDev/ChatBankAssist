@@ -120,31 +120,144 @@
     return kb.data;
   }
 
-  // Punktacja dopasowania wpisu do pytania użytkownika.
-  function scoreEntry(entry, qNorm, qTokens) {
+  /* ----- Lekki stemming PL + dopasowanie rozmyte ----- */
+  // Słowa nieróżnicujące — pomijane przy pokryciu pojedynczych słów,
+  // by nie zawyżały punktacji (domenowe słowa jak „konto”/„karta” zostają).
+  const STOPWORDS = new Set([
+    "jak", "czy", "gdzie", "kiedy", "ile", "co", "jest", "sa", "mam", "chce",
+    "prosze", "oraz", "lub", "nie", "tak", "gdy", "albo", "sie", "dla", "moj",
+    "moje", "moge", "czym", "the", "is", "are", "am", "want", "please", "for",
+    "and", "or", "with", "have", "how", "what", "where", "when", "why", "can",
+    "could", "does", "did", "you", "about", "do", "to", "na", "za", "of", "me",
+    "your", "lub",
+  ]);
+
+  // Konserwatywny stemmer PL: obcina najczęstsze końcówki fleksyjne, by formy
+  // „przelew/przelewy/przelewu” czy „konto/konta” trafiały w ten sam rdzeń.
+  const PL_SUFFIXES = [
+    "iami", "ami", "ach", "ego", "emu", "ych", "ich", "imi", "ymi", "owi",
+    "esz", "asz", "cie", "em", "om", "ie", "ej", "ym", "im", "y", "i", "a",
+    "e", "u", "o",
+  ];
+  function stem(token) {
+    if (token.length < 5) return token;
+    for (let i = 0; i < PL_SUFFIXES.length; i++) {
+      const suf = PL_SUFFIXES[i];
+      if (token.length - suf.length >= 3 && token.slice(-suf.length) === suf) {
+        return token.slice(0, token.length - suf.length);
+      }
+    }
+    return token;
+  }
+
+  // Czy słowa różnią się o co najwyżej jedną literówkę (Levenshtein ≤ 1)?
+  function fuzzyEqual(a, b) {
+    if (a === b) return true;
+    const la = a.length;
+    const lb = b.length;
+    if (Math.abs(la - lb) > 1) return false;
+    let i = 0;
+    let j = 0;
+    let edits = 0;
+    while (i < la && j < lb) {
+      if (a[i] === b[j]) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (la > lb) i++; // usunięcie znaku z a
+      else if (lb > la) j++; // wstawienie znaku
+      else { i++; j++; } // podmiana
+    }
+    if (i < la || j < lb) edits++; // ogon
+    return edits <= 1;
+  }
+
+  // Grupy synonimów / mostki PL↔EN. Każdy rdzeń mapujemy na wspólny rdzeń
+  // kanoniczny grupy, dzięki czemu np. „aplikacja”, „app” i „apka” liczą się
+  // jako JEDNO pojęcie — nie zawyżają punktacji, gdy wpis wymienia je wszystkie.
+  const STEM_CANON = (function () {
+    const groups = [
+      ["haslo", "password"],
+      ["karta", "card"],
+      ["konto", "account", "rachunek"],
+      ["przelew", "transfer", "payment", "platnosc"],
+      ["telefon", "phone", "komorka", "mobile", "smartfon"],
+      ["aplikacja", "app", "apka"],
+      ["zablokowac", "zastrzec", "block", "freeze"],
+      ["oplata", "fee", "koszt", "prowizja", "charge"],
+      ["kredyt", "loan", "pozyczka"],
+      ["lokata", "deposit"],
+      ["oszczednosci", "savings", "oszczedzanie"],
+      ["bankomat", "atm"],
+      ["reklamacja", "complaint", "skarga"],
+      ["zagraniczny", "international", "miedzynarodowy", "foreign"],
+    ];
+    const map = Object.create(null);
+    groups.forEach(function (g) {
+      const stems = g.map(function (w) { return stem(normalize(w)); });
+      const canonical = stems[0];
+      stems.forEach(function (s) { map[s] = canonical; });
+    });
+    return map;
+  })();
+  function canon(s) { return STEM_CANON[s] || s; }
+
+  // Treściowe rdzenie zapytania (z pominięciem stopwords).
+  function queryStems(qTokens) {
+    const out = [];
+    qTokens.forEach(function (t) {
+      if (t.length > 2 && !STOPWORDS.has(t)) out.push(stem(t));
+    });
+    return out;
+  }
+
+  // Czy rdzeń wpisu jest pokryty przez zapytanie — kanonicznie (po synonimach)
+  // albo z tolerancją jednej literówki dla dłuższych słów?
+  function stemMatched(entryStem, qCanonSet, qStemList) {
+    if (qCanonSet.has(canon(entryStem))) return true;
+    if (entryStem.length >= 5) {
+      for (let i = 0; i < qStemList.length; i++) {
+        const qs = qStemList[i];
+        if (qs.length >= 5 && fuzzyEqual(entryStem, qs)) return true;
+      }
+    }
+    return false;
+  }
+
+  // Punktacja dopasowania wpisu do pytania użytkownika:
+  // 1) pokrycie całej wieloczłonowej frazy kluczowej (mocny sygnał) — tolerancyjne
+  //    na odmianę, literówki i synonimy,
+  // 2) pokrycie pojedynczych słów, gdzie każde POJĘCIE liczone jest najwyżej raz,
+  //    więc powtórzenia i synonimy nie zawyżają wyniku.
+  function scoreEntry(entry, qCanonSet, qStemList) {
     let score = 0;
     const fields = [];
-    (entry.keywords || []).forEach(function (k) {
-      fields.push({ t: k, w: 1 });
-    });
+    (entry.keywords || []).forEach(function (k) { fields.push({ t: k, w: 1 }); });
     if (entry.q) {
       if (entry.q.pl) fields.push({ t: entry.q.pl, w: 0.6 });
       if (entry.q.en) fields.push({ t: entry.q.en, w: 0.6 });
     }
+
+    const counted = new Set(); // kanoniczne pojęcia już policzone dla tego wpisu
     fields.forEach(function (f) {
-      const kwNorm = normalize(f.t);
-      if (!kwNorm) return;
-      if (qNorm.indexOf(kwNorm) !== -1) {
-        // dopasowanie całej frazy — mocno punktowane
-        score += (3 + kwNorm.split(" ").length) * f.w;
-      } else {
-        const kwTokens = kwNorm.split(" ");
-        let overlap = 0;
-        kwTokens.forEach(function (t) {
-          if (t.length > 2 && qTokens.indexOf(t) !== -1) overlap++;
-        });
-        score += overlap * f.w;
+      const stems = [];
+      normalize(f.t).split(" ").forEach(function (tok) {
+        if (tok.length > 2 && !STOPWORDS.has(tok)) stems.push(stem(tok));
+      });
+      if (!stems.length) return;
+
+      // (1) cała wieloczłonowa fraza pokryta przez zapytanie
+      if (stems.length >= 2) {
+        const all = stems.every(function (s) { return stemMatched(s, qCanonSet, qStemList); });
+        if (all) score += (3 + stems.length) * f.w;
       }
+
+      // (2) pokrycie pojedynczych słów — każde pojęcie najwyżej raz
+      stems.forEach(function (s) {
+        if (!stemMatched(s, qCanonSet, qStemList)) return;
+        const c = canon(s);
+        if (counted.has(c)) return;
+        counted.add(c);
+        score += f.w;
+      });
     });
     return score;
   }
@@ -154,10 +267,11 @@
     if (!kb.data || !Array.isArray(kb.data.entries)) return null;
     const qNorm = normalize(question);
     if (!qNorm) return null;
-    const qTokens = qNorm.split(" ");
+    const qStemList = queryStems(qNorm.split(" "));
+    const qCanonSet = new Set(qStemList.map(canon));
     let best = null;
     kb.data.entries.forEach(function (entry) {
-      const score = scoreEntry(entry, qNorm, qTokens);
+      const score = scoreEntry(entry, qCanonSet, qStemList);
       if (!best || score > best.score) best = { entry: entry, score: score };
     });
     const THRESHOLD = 3;
@@ -755,6 +869,7 @@
     const text = dom.input.value.trim();
     if (!text) return;
 
+    hideSuggestions();
     addMessage("user", text);
     recordMessage("user", text);
     dom.input.value = "";
@@ -843,24 +958,141 @@
     state.lang = "pl";
     if (dom.log) dom.log.innerHTML = "";
     greet();
+    showSuggestions();
     if (dom.input) dom.input.focus();
+  }
+
+  /* ----- Eksport rozmowy do pliku tekstowego ----- */
+  function buildTranscript() {
+    const bank = (kb.data && kb.data.meta && kb.data.meta.bank) || "Bank";
+    const lines = [];
+    lines.push(bank + " — zapis rozmowy z asystentem");
+    lines.push("Wyeksportowano: " + new Date().toLocaleString("pl-PL"));
+    lines.push("");
+    let up = 0;
+    let down = 0;
+    state.messages.forEach(function (m) {
+      const who = m.role === "user" ? "Ty" : "Asystent";
+      let line = "[" + formatTime(m.ts) + "] " + who + ": " + m.text;
+      if (m.rating === "up") { line += "  [ocena: 👍]"; up++; }
+      else if (m.rating === "down") { line += "  [ocena: 👎]"; down++; }
+      lines.push(line);
+    });
+    lines.push("");
+    lines.push("Podsumowanie ocen: 👍 " + up + " · 👎 " + down);
+    return lines.join("\n");
+  }
+
+  function exportChat() {
+    if (!state.messages.length) return; // nic do zapisania poza powitaniem
+    const blob = new Blob([buildTranscript()], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+    a.href = url;
+    a.download = "rozmowa-" + stamp + ".txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 0);
+  }
+
+  /* ----- Chipy z przykładowymi pytaniami ----- */
+  const SUGGESTIONS = [
+    "Jak otworzyć konto?",
+    "Ile trwa przelew?",
+    "Jak zastrzec kartę?",
+    "Jak wziąć kredyt gotówkowy?",
+    "Jak złożyć reklamację?",
+  ];
+
+  function hideSuggestions() {
+    if (dom.suggestions) dom.suggestions.hidden = true;
+  }
+
+  function showSuggestions() {
+    if (!dom.suggestions) return;
+    dom.suggestions.innerHTML = "";
+    SUGGESTIONS.forEach(function (q) {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.textContent = q;
+      chip.addEventListener("click", function () {
+        if (state.busy) return;
+        dom.input.value = q;
+        hideSuggestions();
+        dom.form.requestSubmit();
+      });
+      dom.suggestions.appendChild(chip);
+    });
+    dom.suggestions.hidden = false;
   }
 
   function initSessionTools() {
     const sBtn = $("#summary-btn");
     const nBtn = $("#newchat-btn");
+    const eBtn = $("#export-btn");
     if (sBtn) sBtn.addEventListener("click", showSummary);
     if (nBtn) nBtn.addEventListener("click", newChat);
+    if (eBtn) eBtn.addEventListener("click", exportChat);
   }
 
-  /* ----- Modale ----- */
+  /* ----- Modale (z pułapką fokusu — dostępność) ----- */
+  const FOCUSABLE =
+    'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  const modalState = { lastFocused: null, keyHandler: null };
+
+  function focusablesIn(container) {
+    return Array.prototype.slice
+      .call(container.querySelectorAll(FOCUSABLE))
+      .filter(function (el) { return !el.hidden && el.offsetParent !== null; });
+  }
+
   function openModal(id) {
     const m = document.getElementById(id);
-    if (m) m.hidden = false;
+    if (!m) return;
+    modalState.lastFocused = document.activeElement;
+    m.hidden = false;
+    const dialog = m.querySelector(".modal__dialog") || m;
+    const list = focusablesIn(dialog);
+    (list[0] || dialog).focus();
+
+    // Esc zamyka, Tab krąży wewnątrz okna (focus trap).
+    modalState.keyHandler = function (e) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeModal(id);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const f = focusablesIn(dialog);
+      if (!f.length) return;
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", modalState.keyHandler, true);
   }
+
   function closeModal(id) {
     const m = document.getElementById(id);
     if (m) m.hidden = true;
+    if (modalState.keyHandler) {
+      document.removeEventListener("keydown", modalState.keyHandler, true);
+      modalState.keyHandler = null;
+    }
+    const lf = modalState.lastFocused;
+    modalState.lastFocused = null;
+    if (lf && typeof lf.focus === "function") {
+      try { lf.focus(); } catch (e) { /* ignore */ }
+    }
   }
 
   // Ostrzeżenia o ograniczeniach CORS poszczególnych dostawców.
@@ -1021,9 +1253,6 @@
       const closer = e.target.closest("[data-close]");
       if (closer) closeModal(closer.getAttribute("data-close"));
     });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !modal.hidden) closeModal("settings-modal");
-    });
     providerSel.addEventListener("change", reflectProvider);
     keyToggle.addEventListener("click", function () {
       keyInput.type = keyInput.type === "password" ? "text" : "password";
@@ -1073,6 +1302,7 @@
     dom.input = $("#chat-input");
     dom.send = $("#send-btn");
     dom.tokenCounter = $("#token-counter");
+    dom.suggestions = $("#suggestions");
 
     initTheme();
     initSettings();
@@ -1093,7 +1323,8 @@
 
     greet();
     await loadKnowledgeBase(); // najpierw baza, by odtworzenie mogło sklasyfikować pytania
-    restoreHistory(); // po odświeżeniu czat nie znika
+    const restored = restoreHistory(); // po odświeżeniu czat nie znika
+    if (!restored) showSuggestions(); // chipy tylko na świeżym ekranie
     dom.input.focus();
   }
 
