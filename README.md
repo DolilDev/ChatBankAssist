@@ -180,4 +180,4 @@ README.md
 
 ## 📄 Licencja
 
-Projekt demonstracyjny. „Bank Przykładowy", dane kontaktowe i treści FAQ są fikcyjne i służą wyłącznie do prezentacji.
+Projekt demonstracyjny. „Bank", dane kontaktowe i treści FAQ są fikcyjne i służą wyłącznie do prezentacji.
