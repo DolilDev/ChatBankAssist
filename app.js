@@ -18,6 +18,7 @@
   const STORAGE = {
     provider: "bank_api_provider",
     key: "bank_api_key",
+    chat: "bank_chat_history",
   };
 
   const PROVIDERS = {
@@ -432,6 +433,41 @@
 
   function recordMessage(role, text) {
     state.messages.push({ role: role, text: text, ts: Date.now() });
+    saveHistory();
+  }
+
+  /* ----- Historia czatu w sessionStorage ----- */
+  function saveHistory() {
+    try {
+      sessionStorage.setItem(STORAGE.chat, JSON.stringify(state.messages));
+    } catch (e) {
+      /* ignore (np. limit / prywatny tryb) */
+    }
+  }
+
+  // Odtwarza zapisaną rozmowę po odświeżeniu strony. Zwraca true, jeśli coś wczytano.
+  function restoreHistory() {
+    let saved = [];
+    try {
+      saved = JSON.parse(sessionStorage.getItem(STORAGE.chat) || "[]");
+    } catch (e) {
+      saved = [];
+    }
+    if (!Array.isArray(saved) || !saved.length) return false;
+    state.messages = saved;
+    saved.forEach(function (m) {
+      addMessage(m.role, m.text, { ts: m.ts });
+    });
+    return true;
+  }
+
+  function clearHistory() {
+    state.messages = [];
+    try {
+      sessionStorage.removeItem(STORAGE.chat);
+    } catch (e) {
+      /* ignore */
+    }
   }
 
   /* ----- Odpowiedź bota: tryb lokalny (baza wiedzy) albo tryb API ----- */
@@ -709,6 +745,7 @@
     });
 
     greet();
+    restoreHistory(); // po odświeżeniu czat nie znika
     dom.input.focus();
     await loadKnowledgeBase();
   }
