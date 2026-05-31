@@ -171,19 +171,21 @@
   </div>
 
   <!-- Widget Voiceflow (osadzony przez oficjalny embed) -->
-  <script>
+  <script type="text/javascript">
     (function(d, t) {
       var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
       v.onload = function() {
         window.voiceflow.chat.load({
           verify: { projectID: '6a1be20d7b492825fac4e318' },
           url: 'https://general-runtime.voiceflow.com',
-          versionID: 'production',
-          launch: { autostart: true }
+          versionID: 'production'
+        }).then(function() {
+          setTimeout(function() {
+            window.voiceflow.chat.open();
+          }, 500);
         });
-        window.voiceflow.chat.open();
       }
-      v.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+      v.src = 'https://cdn.voiceflow.com/widget/bundle.mjs';
       v.type = 'text/javascript';
       s.parentNode.insertBefore(v, s);
     })(document, 'script');
