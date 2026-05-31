@@ -57,6 +57,27 @@ jobs:
           echo "Rozmiary źródłowe vs zminifikowane:"
           ls -l app.js dist/app.js style.css dist/style.css
 
+      - name: Generate sitemap.xml and robots.txt
+        run: |
+          OWNER="${GITHUB_REPOSITORY%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          BASE="https://${OWNER,,}.github.io/${REPO}"
+          DATE="$(date -u +%Y-%m-%d)"
+          {
+            echo '<?xml version="1.0" encoding="UTF-8"?>'
+            echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            echo "  <url><loc>${BASE}/</loc><lastmod>${DATE}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"
+            echo "  <url><loc>${BASE}/demo.html</loc><lastmod>${DATE}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>"
+            echo '</urlset>'
+          } > dist/sitemap.xml
+          {
+            echo 'User-agent: *'
+            echo 'Allow: /'
+            echo "Sitemap: ${BASE}/sitemap.xml"
+          } > dist/robots.txt
+          echo "Wygenerowano sitemap.xml:"
+          cat dist/sitemap.xml
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
