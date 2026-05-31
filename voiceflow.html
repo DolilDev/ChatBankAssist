@@ -64,6 +64,17 @@
       overflow: hidden;
       box-shadow: 0 4px 24px rgba(0,0,0,0.4);
       z-index: 9999;
+      background: transparent;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .vf-iframe-container.open {
+      visibility: visible;
+      opacity: 1;
+    }
+    .vf-iframe-container iframe {
+      background: transparent;
     }
     @media (max-width: 440px) {
       .vf-iframe-container {
@@ -208,7 +219,7 @@
   </div>
 
   <!-- Pływające okno asystenta (iframe w prawym dolnym rogu) -->
-  <div class="vf-iframe-container" style="display:none;">
+  <div class="vf-iframe-container">
     <iframe
       src="https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft"
       title="Czat Voiceflow — asystent Banku"
@@ -222,13 +233,12 @@
   <!-- Pokaż/ukryj pływające okno asystenta -->
   <script>
     document.getElementById('open-chat-btn').addEventListener('click', function() {
-      var container = document.querySelector('.vf-iframe-container');
-      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+      document.querySelector('.vf-iframe-container').classList.toggle('open');
     });
 
     // Na start ukryte, automatyczne otwarcie po 500 ms.
     setTimeout(function() {
-      document.querySelector('.vf-iframe-container').style.display = 'block';
+      document.querySelector('.vf-iframe-container').classList.add('open');
     }, 500);
   </script>
 
