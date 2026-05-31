@@ -8,9 +8,20 @@
   /* ----- Referencje DOM ----- */
   const dom = {};
 
+  /* ----- Stan ----- */
+  const state = {
+    busy: false, // true gdy bot generuje odpowiedź
+  };
+
   /* ----- Pomocnicze ----- */
   function $(sel) {
     return document.querySelector(sel);
+  }
+
+  function delay(ms) {
+    return new Promise(function (r) {
+      setTimeout(r, ms);
+    });
   }
 
   function scrollToBottom() {
@@ -45,24 +56,76 @@
     return bubble;
   }
 
-  /* ----- Odpowiedź bota (placeholder — w kolejnych krokach: streaming + baza wiedzy) ----- */
-  function botReply() {
-    addMessage(
-      "bot",
-      "Dziękuję za wiadomość. Za chwilę nauczę się odpowiadać na podstawie bazy wiedzy banku."
-    );
+  /* ----- Wskaźnik pisania ----- */
+  function showTyping() {
+    const wrap = document.createElement("div");
+    wrap.className = "message message--bot";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble bubble--typing";
+    bubble.setAttribute("aria-label", "Asystent pisze…");
+    bubble.innerHTML =
+      '<span class="typing"><span></span><span></span><span></span></span>';
+    wrap.appendChild(bubble);
+    dom.log.appendChild(wrap);
+    scrollToBottom();
+    return wrap;
+  }
+
+  /* ----- Streaming tekstu słowo po słowie (jak w ChatGPT) ----- */
+  function streamWords(bubble, text) {
+    return new Promise(function (resolve) {
+      const tokens = String(text).split(/(\s+)/); // zachowujemy odstępy
+      let i = 0;
+      bubble.classList.add("bubble--streaming");
+      (function tick() {
+        if (i >= tokens.length) {
+          bubble.classList.remove("bubble--streaming");
+          resolve();
+          return;
+        }
+        bubble.textContent += tokens[i++];
+        scrollToBottom();
+        setTimeout(tick, 26 + Math.random() * 42);
+      })();
+    });
+  }
+
+  /* ----- Odpowiedź bota (treść z bazy wiedzy dodawana w kolejnym kroku) ----- */
+  async function botReply() {
+    const text =
+      "Dziękuję za wiadomość. Za chwilę nauczę się odpowiadać na podstawie bazy wiedzy banku.";
+    const typing = showTyping();
+    await delay(450 + Math.random() * 350);
+    typing.remove();
+    const bubble = addMessage("bot", "");
+    await streamWords(bubble, text);
   }
 
   /* ----- Wysyłanie wiadomości ----- */
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    if (state.busy) return;
     const text = dom.input.value.trim();
     if (!text) return;
 
     addMessage("user", text);
     dom.input.value = "";
     autoResize();
-    botReply(text);
+
+    setBusy(true);
+    try {
+      await botReply(text);
+    } finally {
+      setBusy(false);
+      dom.input.focus();
+    }
+  }
+
+  /* ----- Blokowanie wejścia w trakcie generowania ----- */
+  function setBusy(busy) {
+    state.busy = busy;
+    if (dom.send) dom.send.disabled = busy;
+    if (dom.input) dom.input.disabled = busy;
   }
 
   /* ----- Auto-rozmiar pola tekstowego ----- */
