@@ -51,7 +51,7 @@ jobs:
       - name: Prepare site (dist/)
         run: |
           mkdir -p dist
-          cp index.html demo.html voiceflow.html knowledge_base.json dist/
+          cp index.html demo.html voiceflow.html knowledge_base.json favicon.svg favicon.ico apple-touch-icon.png dist/
 
       - name: Minify CSS and JS
         run: |
