@@ -7,9 +7,9 @@
 
 ## Wiadomość eskalacyjna
 
-**PL:** Dziękuję za kontakt. Ta sprawa wymaga interwencji konsultanta. Proszę skorzystać z jednej z poniższych form kontaktu: infolinia 000 000 000 (pon.–pt. 8:00–20:00) lub adres e-mail kontakt@example.com.
+**PL:** Dziękuję za kontakt. Ta sprawa wymaga interwencji konsultanta. Proszę skorzystać z jednej z poniższych form kontaktu: infolinia 000 000 000 (pon.–pt. 8:00–20:00) lub adres e-mail kontakt@bank.pl.
 
-**EN:** Thank you for contacting us. This matter requires the assistance of a consultant. Please use one of the contact options below: helpline +48 000 000 000 (Mon–Fri 8:00–20:00) or email kontakt@example.com.
+**EN:** Thank you for contacting us. This matter requires the assistance of a consultant. Please use one of the contact options below: helpline +48 000 000 000 (Mon–Fri 8:00–20:00) or email kontakt@bank.pl.
 
 ---
 
@@ -159,9 +159,9 @@
 
 **Słowa kluczowe:** phishing, podejrzany email, podejrzany sms, fałszywy link, oszustwo email, wyłudzenie danych, suspicious email, suspicious sms, fake link, scam message
 
-**PL:** Nie klikaj w linki i nie podawaj danych logowania ani kodów. Bank nigdy nie prosi e-mailem ani SMS-em o hasło, pełny numer karty czy kod BLIK. Prześlij podejrzaną wiadomość na adres phishing@example.com i ją usuń. W razie wątpliwości zaloguj się wyłącznie przez oficjalną aplikację lub stronę.
+**PL:** Nie klikaj w linki i nie podawaj danych logowania ani kodów. Bank nigdy nie prosi e-mailem ani SMS-em o hasło, pełny numer karty czy kod BLIK. Prześlij podejrzaną wiadomość na adres phishing@bank.pl i ją usuń. W razie wątpliwości zaloguj się wyłącznie przez oficjalną aplikację lub stronę.
 
-**EN:** Don't click any links and never share your login details or codes. The bank never asks by email or SMS for your password, full card number or BLIK code. Forward the suspicious message to phishing@example.com and delete it. When in doubt, log in only via the official app or website.
+**EN:** Don't click any links and never share your login details or codes. The bank never asks by email or SMS for your password, full card number or BLIK code. Forward the suspicious message to phishing@bank.pl and delete it. When in doubt, log in only via the official app or website.
 
 ## Jak działa bezpieczne logowanie i autoryzacja? / How do secure login and authorization work?
 
@@ -195,9 +195,9 @@
 
 **Słowa kluczowe:** złożyć reklamację, reklamacja, skarga, zgłosić problem, niezgodność, file a complaint, submit complaint, report a problem
 
-**PL:** Reklamację złożysz: w aplikacji/bankowości internetowej („Pomoc” → „Reklamacje”), telefonicznie pod 000 000 000, mailowo na reklamacje@example.com lub pisemnie w oddziale. Podaj swoje dane, opis sprawy i oczekiwany sposób rozwiązania. Otrzymasz potwierdzenie przyjęcia i numer zgłoszenia.
+**PL:** Reklamację złożysz: w aplikacji/bankowości internetowej („Pomoc” → „Reklamacje”), telefonicznie pod 000 000 000, mailowo na reklamacje@bank.pl lub pisemnie w oddziale. Podaj swoje dane, opis sprawy i oczekiwany sposób rozwiązania. Otrzymasz potwierdzenie przyjęcia i numer zgłoszenia.
 
-**EN:** You can file a complaint: in the app/online banking ("Help" → "Complaints"), by phone at +48 000 000 000, by email at reklamacje@example.com or in writing at a branch. Provide your details, a description of the issue and your expected resolution. You'll receive a confirmation and a case number.
+**EN:** You can file a complaint: in the app/online banking ("Help" → "Complaints"), by phone at +48 000 000 000, by email at reklamacje@bank.pl or in writing at a branch. Provide your details, a description of the issue and your expected resolution. You'll receive a confirmation and a case number.
 
 ## Ile trwa rozpatrzenie reklamacji? / How long does it take to handle a complaint?
 
@@ -223,9 +223,9 @@
 
 **Słowa kluczowe:** kontakt, infolinia, numer telefonu, jak się skontaktować, czat, email banku, contact, helpline, phone number, how to contact, chat, email
 
-**PL:** Dostępne kanały kontaktu: infolinia 000 000 000 (z zagranicy +48 00 000 00 00), czat i wideoczat w aplikacji, e-mail kontakt@example.com, formularz na stronie oraz sieć oddziałów. W pilnych sprawach bezpieczeństwa i zastrzegania kart infolinia działa całą dobę.
+**PL:** Dostępne kanały kontaktu: infolinia 000 000 000 (z zagranicy +48 00 000 00 00), czat i wideoczat w aplikacji, e-mail kontakt@bank.pl, formularz na stronie oraz sieć oddziałów. W pilnych sprawach bezpieczeństwa i zastrzegania kart infolinia działa całą dobę.
 
-**EN:** Available contact channels: helpline +48 000 000 000 (from abroad +48 00 000 00 00), chat and video chat in the app, email kontakt@example.com, the website form and our branch network. For urgent security matters and card blocking the helpline is available 24/7.
+**EN:** Available contact channels: helpline +48 000 000 000 (from abroad +48 00 000 00 00), chat and video chat in the app, email kontakt@bank.pl, the website form and our branch network. For urgent security matters and card blocking the helpline is available 24/7.
 
 ## W jakich godzinach pracują oddziały i infolinia? / What are the branch and helpline opening hours?
 
