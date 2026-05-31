@@ -7,9 +7,9 @@
 
 ## Wiadomość eskalacyjna
 
-**PL:** Niestety nie mam pewnej odpowiedzi na to pytanie. Przekazuję sprawę do konsultanta. Możesz też zadzwonić na infolinię 800 123 456 (pon.–pt. 8:00–20:00) lub napisać na kontakt@bank.pl.
+**PL:** Dziękuję za kontakt. Ta sprawa wymaga interwencji konsultanta. Proszę skorzystać z jednej z poniższych form kontaktu: infolinia 000 000 000 (pon.–pt. 8:00–20:00) lub adres e-mail kontakt@example.com.
 
-**EN:** I'm sorry, I don't have a reliable answer to that. I'm escalating this to a human consultant. You can also call our helpline at +48 800 123 456 (Mon–Fri 8:00–20:00) or email kontakt@bank.pl.
+**EN:** Thank you for contacting us. This matter requires the assistance of a consultant. Please use one of the contact options below: helpline +48 000 000 000 (Mon–Fri 8:00–20:00) or email kontakt@example.com.
 
 ---
 
@@ -131,9 +131,9 @@
 
 **Słowa kluczowe:** zablokować kartę, zastrzec kartę, zgubiłem kartę, skradziona karta, kradzież karty, block card, lost card, stolen card, freeze card
 
-**PL:** Działaj natychmiast. Kartę czasowo zablokujesz jednym kliknięciem w aplikacji („Karty” → „Zablokuj”), a trwale zastrzeżesz na infolinii 800 123 456 lub przez ogólnopolski System Zastrzegania Kart: +48 828 828 828 (czynne całą dobę). Po zastrzeżeniu zamówisz nową kartę bez zmiany numeru konta.
+**PL:** Działaj natychmiast. Kartę czasowo zablokujesz jednym kliknięciem w aplikacji („Karty” → „Zablokuj”), a trwale zastrzeżesz na infolinii 000 000 000 lub przez ogólnopolski System Zastrzegania Kart: +48 000 000 000 (czynne całą dobę). Po zastrzeżeniu zamówisz nową kartę bez zmiany numeru konta.
 
-**EN:** Act immediately. You can temporarily freeze the card with one tap in the app ("Cards" → "Freeze"), and permanently cancel it via the helpline at +48 800 123 456 or the nationwide Card Reservation System: +48 828 828 828 (open 24/7). After cancellation you can order a new card without changing your account number.
+**EN:** Act immediately. You can temporarily freeze the card with one tap in the app ("Cards" → "Freeze"), and permanently cancel it via the helpline at +48 000 000 000 or the nationwide Card Reservation System: +48 000 000 000 (open 24/7). After cancellation you can order a new card without changing your account number.
 
 ## Jak zmienić limity na karcie? / How do I change my card limits?
 
@@ -159,9 +159,9 @@
 
 **Słowa kluczowe:** phishing, podejrzany email, podejrzany sms, fałszywy link, oszustwo email, wyłudzenie danych, suspicious email, suspicious sms, fake link, scam message
 
-**PL:** Nie klikaj w linki i nie podawaj danych logowania ani kodów. Bank nigdy nie prosi e-mailem ani SMS-em o hasło, pełny numer karty czy kod BLIK. Prześlij podejrzaną wiadomość na adres phishing@bank.pl i ją usuń. W razie wątpliwości zaloguj się wyłącznie przez oficjalną aplikację lub stronę.
+**PL:** Nie klikaj w linki i nie podawaj danych logowania ani kodów. Bank nigdy nie prosi e-mailem ani SMS-em o hasło, pełny numer karty czy kod BLIK. Prześlij podejrzaną wiadomość na adres phishing@example.com i ją usuń. W razie wątpliwości zaloguj się wyłącznie przez oficjalną aplikację lub stronę.
 
-**EN:** Don't click any links and never share your login details or codes. The bank never asks by email or SMS for your password, full card number or BLIK code. Forward the suspicious message to phishing@bank.pl and delete it. When in doubt, log in only via the official app or website.
+**EN:** Don't click any links and never share your login details or codes. The bank never asks by email or SMS for your password, full card number or BLIK code. Forward the suspicious message to phishing@example.com and delete it. When in doubt, log in only via the official app or website.
 
 ## Jak działa bezpieczne logowanie i autoryzacja? / How do secure login and authorization work?
 
@@ -175,9 +175,9 @@
 
 **Słowa kluczowe:** nieautoryzowana transakcja, podejrzenie oszustwa, ukradziono pieniądze, wyłudzenie, zgłoszenie oszustwa, fraud, unauthorized transaction, money stolen, report fraud
 
-**PL:** Natychmiast zablokuj kartę w aplikacji i zadzwoń na infolinię 800 123 456 (czynna całą dobę w sprawach bezpieczeństwa). Zmień hasło do bankowości. Zgłoś nieautoryzowaną transakcję – zgodnie z prawem zwykle masz prawo do zwrotu środków, jeśli nie doszło do rażącego zaniedbania. Rozważ też zgłoszenie sprawy na Policję.
+**PL:** Natychmiast zablokuj kartę w aplikacji i zadzwoń na infolinię 000 000 000 (czynna całą dobę w sprawach bezpieczeństwa). Zmień hasło do bankowości. Zgłoś nieautoryzowaną transakcję – zgodnie z prawem zwykle masz prawo do zwrotu środków, jeśli nie doszło do rażącego zaniedbania. Rozważ też zgłoszenie sprawy na Policję.
 
-**EN:** Immediately freeze your card in the app and call the helpline at +48 800 123 456 (open 24/7 for security matters). Change your online banking password. Report the unauthorized transaction – by law you are usually entitled to a refund unless there was gross negligence. Consider also reporting the case to the Police.
+**EN:** Immediately freeze your card in the app and call the helpline at +48 000 000 000 (open 24/7 for security matters). Change your online banking password. Report the unauthorized transaction – by law you are usually entitled to a refund unless there was gross negligence. Consider also reporting the case to the Police.
 
 ## Zapomniałem hasła do bankowości – jak je zresetować? / I forgot my online banking password – how do I reset it?
 
@@ -195,9 +195,9 @@
 
 **Słowa kluczowe:** złożyć reklamację, reklamacja, skarga, zgłosić problem, niezgodność, file a complaint, submit complaint, report a problem
 
-**PL:** Reklamację złożysz: w aplikacji/bankowości internetowej („Pomoc” → „Reklamacje”), telefonicznie pod 800 123 456, mailowo na reklamacje@bank.pl lub pisemnie w oddziale. Podaj swoje dane, opis sprawy i oczekiwany sposób rozwiązania. Otrzymasz potwierdzenie przyjęcia i numer zgłoszenia.
+**PL:** Reklamację złożysz: w aplikacji/bankowości internetowej („Pomoc” → „Reklamacje”), telefonicznie pod 000 000 000, mailowo na reklamacje@example.com lub pisemnie w oddziale. Podaj swoje dane, opis sprawy i oczekiwany sposób rozwiązania. Otrzymasz potwierdzenie przyjęcia i numer zgłoszenia.
 
-**EN:** You can file a complaint: in the app/online banking ("Help" → "Complaints"), by phone at +48 800 123 456, by email at reklamacje@bank.pl or in writing at a branch. Provide your details, a description of the issue and your expected resolution. You'll receive a confirmation and a case number.
+**EN:** You can file a complaint: in the app/online banking ("Help" → "Complaints"), by phone at +48 000 000 000, by email at reklamacje@example.com or in writing at a branch. Provide your details, a description of the issue and your expected resolution. You'll receive a confirmation and a case number.
 
 ## Ile trwa rozpatrzenie reklamacji? / How long does it take to handle a complaint?
 
@@ -223,9 +223,9 @@
 
 **Słowa kluczowe:** kontakt, infolinia, numer telefonu, jak się skontaktować, czat, email banku, contact, helpline, phone number, how to contact, chat, email
 
-**PL:** Dostępne kanały kontaktu: infolinia 800 123 456 (z zagranicy +48 22 123 45 67), czat i wideoczat w aplikacji, e-mail kontakt@bank.pl, formularz na stronie oraz sieć oddziałów. W pilnych sprawach bezpieczeństwa i zastrzegania kart infolinia działa całą dobę.
+**PL:** Dostępne kanały kontaktu: infolinia 000 000 000 (z zagranicy +48 00 000 00 00), czat i wideoczat w aplikacji, e-mail kontakt@example.com, formularz na stronie oraz sieć oddziałów. W pilnych sprawach bezpieczeństwa i zastrzegania kart infolinia działa całą dobę.
 
-**EN:** Available contact channels: helpline +48 800 123 456 (from abroad +48 22 123 45 67), chat and video chat in the app, email kontakt@bank.pl, the website form and our branch network. For urgent security matters and card blocking the helpline is available 24/7.
+**EN:** Available contact channels: helpline +48 000 000 000 (from abroad +48 00 000 00 00), chat and video chat in the app, email kontakt@example.com, the website form and our branch network. For urgent security matters and card blocking the helpline is available 24/7.
 
 ## W jakich godzinach pracują oddziały i infolinia? / What are the branch and helpline opening hours?
 
@@ -239,9 +239,9 @@
 
 **Słowa kluczowe:** numer do zastrzegania kart, zastrzeganie kart telefon, infolinia karty 24h, całodobowy numer, card reservation phone, 24h card hotline, block card number
 
-**PL:** Kartę zastrzeżesz przez całą dobę pod numerem naszej infolinii 800 123 456 lub korzystając z ogólnopolskiego Systemu Zastrzegania Kart: +48 828 828 828 (czynny 24/7, dla kart wszystkich banków). Najszybciej zablokujesz kartę samodzielnie w aplikacji mobilnej.
+**PL:** Kartę zastrzeżesz przez całą dobę pod numerem naszej infolinii 000 000 000 lub korzystając z ogólnopolskiego Systemu Zastrzegania Kart: +48 000 000 000 (czynny 24/7, dla kart wszystkich banków). Najszybciej zablokujesz kartę samodzielnie w aplikacji mobilnej.
 
-**EN:** You can block your card around the clock via our helpline at +48 800 123 456 or using the nationwide Card Reservation System: +48 828 828 828 (open 24/7, for cards from all banks). The fastest option is to freeze the card yourself in the mobile app.
+**EN:** You can block your card around the clock via our helpline at +48 000 000 000 or using the nationwide Card Reservation System: +48 000 000 000 (open 24/7, for cards from all banks). The fastest option is to freeze the card yourself in the mobile app.
 
 ---
 
@@ -307,9 +307,9 @@
 
 **Słowa kluczowe:** aplikacja nie działa, problem z aplikacją, aplikacja się zawiesza, błąd aplikacji, aplikacja nie wczytuje, app not working, app crashes, app error
 
-**PL:** Najpierw zaktualizuj aplikację do najnowszej wersji i sprawdź połączenie z internetem. Pomaga też ponowne uruchomienie telefonu oraz wyczyszczenie pamięci podręcznej aplikacji. Jeśli zapomniałeś hasła, użyj opcji „Nie pamiętam hasła” na ekranie logowania. Gdy problem nie ustępuje, zadzwoń na infolinię 800 123 456 – pomożemy odblokować dostęp.
+**PL:** Najpierw zaktualizuj aplikację do najnowszej wersji i sprawdź połączenie z internetem. Pomaga też ponowne uruchomienie telefonu oraz wyczyszczenie pamięci podręcznej aplikacji. Jeśli zapomniałeś hasła, użyj opcji „Nie pamiętam hasła” na ekranie logowania. Gdy problem nie ustępuje, zadzwoń na infolinię 000 000 000 – pomożemy odblokować dostęp.
 
-**EN:** First update the app to the latest version and check your internet connection. Restarting your phone and clearing the app's cache also helps. If you forgot your password, use the "Forgot password" option on the login screen. If the problem persists, call the helpline at +48 800 123 456 – we'll help restore your access.
+**EN:** First update the app to the latest version and check your internet connection. Restarting your phone and clearing the app's cache also helps. If you forgot your password, use the "Forgot password" option on the login screen. If the problem persists, call the helpline at +48 000 000 000 – we'll help restore your access.
 
 ## Jak włączyć logowanie biometryczne (odcisk palca / Face ID)? / How do I enable biometric login (fingerprint / Face ID)?
 

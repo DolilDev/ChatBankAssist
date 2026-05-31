@@ -312,7 +312,7 @@
         "You are the customer-service assistant of " + bank + ", a Polish retail bank. " +
         "Answer ONLY based on the FAQ knowledge base below. Be concise, professional and friendly. " +
         "If the question is not covered by the knowledge base, say you don't have a reliable answer and " +
-        "that you are escalating to a human consultant (helpline +48 800 123 456). Reply in English.\n\n" +
+        "that you are escalating to a human consultant (helpline +48 000 000 000). Reply in English.\n\n" +
         "KNOWLEDGE BASE:\n" + ctx
       );
     }
@@ -321,7 +321,7 @@
       "Jesteś asystentem obsługi klienta banku „" + bank + "” (polski bank detaliczny). " +
       "Odpowiadaj WYŁĄCZNIE na podstawie poniższej bazy wiedzy FAQ. Bądź zwięzły, profesjonalny i uprzejmy. " +
       "Jeśli pytanie nie jest objęte bazą wiedzy, napisz, że nie masz pewnej odpowiedzi i przekazujesz sprawę " +
-      "do konsultanta (infolinia 800 123 456). Odpowiadaj po polsku.\n\n" +
+      "do konsultanta (infolinia 000 000 000). Odpowiadaj po polsku.\n\n" +
       "BAZA WIEDZY:\n" + ctx
     );
   }
@@ -756,9 +756,9 @@
 
   /* ----- Eskalacja do konsultanta ----- */
   const CONTACT = {
-    phone: "800 123 456",
-    phoneHref: "+48800123456",
-    email: "kontakt@bank.pl",
+    phone: "000 000 000",
+    phoneHref: "+48000000000",
+    email: "kontakt@example.com",
   };
   const ICON_PHONE =
     '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
