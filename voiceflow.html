@@ -187,6 +187,20 @@
         }).then(function() {
           setTimeout(function() {
             window.voiceflow.chat.open();
+
+            // Wymuś zdarzenie startowe konwersacji (wiadomość powitalna).
+            setTimeout(function() {
+              window.voiceflow.chat.interact({
+                type: 'launch',
+                payload: {}
+              });
+            }, 1000);
+
+            // Alternatywa: znajdź i kliknij przycisk „Start New Chat" w DOM.
+            setTimeout(function() {
+              var startBtn = document.querySelector('.vfrc-chat-input--new-chat, [class*="new-chat"], [class*="start-chat"]');
+              if (startBtn) startBtn.click();
+            }, 1500);
           }, 500);
         });
       }
