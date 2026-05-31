@@ -432,8 +432,10 @@
   }
 
   function recordMessage(role, text) {
-    state.messages.push({ role: role, text: text, ts: Date.now() });
+    const msg = { role: role, text: text, ts: Date.now() };
+    state.messages.push(msg);
     saveHistory();
+    return msg;
   }
 
   /* ----- Historia czatu w sessionStorage ----- */
@@ -456,7 +458,8 @@
     if (!Array.isArray(saved) || !saved.length) return false;
     state.messages = saved;
     saved.forEach(function (m) {
-      addMessage(m.role, m.text, { ts: m.ts });
+      const bubble = addMessage(m.role, m.text, { ts: m.ts });
+      if (m.role === "bot") addRating(bubble, m);
     });
     return true;
   }
@@ -468,6 +471,53 @@
     } catch (e) {
       /* ignore */
     }
+  }
+
+  /* ----- Ocena odpowiedzi (thumbs up / down) ----- */
+  const THUMB_UP =
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
+  const THUMB_DOWN =
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>';
+
+  function makeRateBtn(kind, label, icon) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "rate-btn rate-btn--" + kind;
+    b.setAttribute("aria-label", label);
+    b.title = label;
+    b.innerHTML = icon;
+    return b;
+  }
+
+  // Dodaje przyciski oceny pod bańką bota, powiązane z rekordem wiadomości.
+  function addRating(bubble, msg) {
+    const wrap = bubble.closest ? bubble.closest(".message") : bubble.parentNode;
+    if (!wrap) return;
+    const bar = document.createElement("div");
+    bar.className = "msg-actions";
+    const up = makeRateBtn("up", "Dobra odpowiedź", THUMB_UP);
+    const down = makeRateBtn("down", "Słaba odpowiedź", THUMB_DOWN);
+    bar.appendChild(up);
+    bar.appendChild(down);
+
+    const meta = wrap.querySelector(".message__meta");
+    if (meta) wrap.insertBefore(bar, meta);
+    else wrap.appendChild(bar);
+
+    function reflect() {
+      up.classList.toggle("is-active", msg.rating === "up");
+      down.classList.toggle("is-active", msg.rating === "down");
+      up.setAttribute("aria-pressed", String(msg.rating === "up"));
+      down.setAttribute("aria-pressed", String(msg.rating === "down"));
+    }
+    function rate(value) {
+      msg.rating = msg.rating === value ? null : value;
+      saveHistory();
+      reflect();
+    }
+    up.addEventListener("click", function () { rate("up"); });
+    down.addEventListener("click", function () { rate("down"); });
+    reflect();
   }
 
   /* ----- Odpowiedź bota: tryb lokalny (baza wiedzy) albo tryb API ----- */
@@ -499,7 +549,8 @@
     typing.remove();
     const bubble = addMessage("bot", "");
     await streamWords(bubble, text);
-    recordMessage("bot", text);
+    const rec = recordMessage("bot", text);
+    addRating(bubble, rec);
   }
 
   // Tryb API — prawdziwy streaming tokenów od wybranego dostawcy.
@@ -525,7 +576,8 @@
         bubble.textContent = "(Otrzymano pustą odpowiedź z API.)";
       }
       bubble.classList.remove("bubble--streaming");
-      recordMessage("bot", bubble.textContent);
+      const rec = recordMessage("bot", bubble.textContent);
+      addRating(bubble, rec);
     } catch (err) {
       if (typing.parentNode) typing.remove();
       if (bubble) bubble.classList.remove("bubble--streaming");

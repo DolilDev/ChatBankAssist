@@ -578,6 +578,43 @@ body {
   display: none;
 }
 
+/* ----- Ocena odpowiedzi (thumbs up / down) ----- */
+.msg-actions {
+  display: flex;
+  gap: 5px;
+  margin: 6px 2px 0;
+}
+
+.rate-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color .12s ease, border-color .12s ease, background .12s ease;
+}
+
+.rate-btn:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.rate-btn--up.is-active {
+  color: #16794c;
+  border-color: #16794c;
+  background: #ecfdf3;
+}
+
+.rate-btn--down.is-active {
+  color: #c0392b;
+  border-color: #c0392b;
+  background: #fef2f2;
+}
+
 /* ----- Ekran powitalny ----- */
 .welcome__lead {
   margin: 0 0 16px;
