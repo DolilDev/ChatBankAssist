@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="500" viewBox="0 0 760 500" font-family="Segoe UI, Roboto, system-ui, sans-serif">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#0b2545" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="760" height="500" fill="#eef2f8"/>
+
+  <!-- App window -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="30" width="600" height="440" rx="18" fill="#f3f6fb"/>
+  </g>
+
+  <!-- Header -->
+  <path d="M80 48 a18 18 0 0 1 18 -18 h564 a18 18 0 0 1 18 18 v36 h-600 z" fill="#0b2545"/>
+  <rect x="100" y="42" width="34" height="34" rx="9" fill="#ffffff22"/>
+  <path d="M108 70 v-9 l9 -6 9 6 v9 m-12 0 v-5 h6 v5" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="146" y="58" fill="#fff" font-size="15" font-weight="700">Bank Przykładowy</text>
+  <text x="146" y="74" fill="#ffffffb8" font-size="11.5">Asystent klienta</text>
+  <rect x="486" y="48" width="86" height="22" rx="11" fill="#ffffff1a" stroke="#ffffff26"/>
+  <text x="529" y="63" fill="#ffffffd0" font-size="11" font-weight="600" text-anchor="middle">~1 248 tok</text>
+  <circle cx="600" cy="59" r="13" fill="#ffffff18"/>
+  <circle cx="636" cy="59" r="13" fill="#ffffff18"/>
+
+  <!-- Bot greeting -->
+  <g>
+    <rect x="100" y="104" width="360" height="58" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="116" y="128" fill="#0f172a" font-size="12.5">Dzień dobry! Jestem asystentem Banku</text>
+    <text x="116" y="146" fill="#0f172a" font-size="12.5">Przykładowego. W czym mogę pomóc?</text>
+    <text x="116" y="176" fill="#5b6b82" font-size="10.5">Asystent · 09:14</text>
+  </g>
+
+  <!-- User bubble -->
+  <g>
+    <rect x="408" y="196" width="252" height="36" rx="16" fill="#0b2545"/>
+    <text x="644" y="219" fill="#fff" font-size="12.5" text-anchor="end">Jak otworzyć konto osobiste?</text>
+    <text x="644" y="246" fill="#5b6b82" font-size="10.5" text-anchor="end">Ty · 09:14</text>
+  </g>
+
+  <!-- Bot answer with streaming caret + ratings -->
+  <g>
+    <rect x="100" y="266" width="430" height="84" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+    <text x="116" y="290" fill="#0f172a" font-size="12.5">Konto otworzysz w 100% online w ok. 10 minut:</text>
+    <text x="116" y="308" fill="#0f172a" font-size="12.5">wypełnij wniosek i potwierdź tożsamość przelewem</text>
+    <text x="116" y="326" fill="#0f172a" font-size="12.5">weryfikacyjnym lub w aplikacji mObywatel.<tspan fill="#2563eb" font-weight="700">▋</tspan></text>
+    <!-- thumbs -->
+    <rect x="116" y="360" width="30" height="24" rx="8" fill="#ecfdf3" stroke="#16794c"/>
+    <path d="M124 376 v-6 m4 6 l3 -1 1 -4 h-3 l1 -3 -3 2 v6 z" fill="none" stroke="#16794c" stroke-width="1.4" stroke-linejoin="round"/>
+    <rect x="150" y="360" width="30" height="24" rx="8" fill="#fff" stroke="#e2e8f0"/>
+    <path d="M158 368 v6 m4 -6 l3 1 1 4 h-3 l1 3 -3 -2 v-6 z" fill="none" stroke="#5b6b82" stroke-width="1.4" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Composer -->
+  <g>
+    <rect x="100" y="406" width="560" height="46" rx="16" fill="#fff" stroke="#e2e8f0"/>
+    <text x="120" y="434" fill="#5b6b82" font-size="12.5">Napisz wiadomość… (np. Jak zrobić przelew?)</text>
+    <rect x="610" y="412" width="40" height="34" rx="11" fill="#2563eb"/>
+    <path d="M622 429 l16 -6 -6 16 -3 -7 -7 -3 z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+</svg>
