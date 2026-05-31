@@ -210,9 +210,6 @@
         }).then(function() {
           setTimeout(function() {
             window.voiceflow.chat.open();
-            setTimeout(function() {
-              window.voiceflow.chat.interact({ type: 'launch', payload: {} });
-            }, 800);
           }, 500);
         });
       }
