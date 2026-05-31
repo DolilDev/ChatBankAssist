@@ -24,6 +24,89 @@
     });
   }
 
+  /* ----- Baza wiedzy ----- */
+  const kb = {
+    data: null,
+    loaded: false,
+  };
+
+  // Normalizacja tekstu: małe litery, bez polskich znaków i interpunkcji.
+  function normalize(s) {
+    return String(s || "")
+      .toLowerCase()
+      .replace(/[łŁ]/g, "l")
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "") // usuń znaki diakrytyczne
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  async function loadKnowledgeBase() {
+    try {
+      const res = await fetch("knowledge_base.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      kb.data = await res.json();
+      kb.loaded = true;
+    } catch (err) {
+      console.warn("Nie udało się wczytać bazy wiedzy:", err);
+      kb.data = null;
+      kb.loaded = false;
+    }
+    return kb.data;
+  }
+
+  // Punktacja dopasowania wpisu do pytania użytkownika.
+  function scoreEntry(entry, qNorm, qTokens) {
+    let score = 0;
+    const fields = [];
+    (entry.keywords || []).forEach(function (k) {
+      fields.push({ t: k, w: 1 });
+    });
+    if (entry.q) {
+      if (entry.q.pl) fields.push({ t: entry.q.pl, w: 0.6 });
+      if (entry.q.en) fields.push({ t: entry.q.en, w: 0.6 });
+    }
+    fields.forEach(function (f) {
+      const kwNorm = normalize(f.t);
+      if (!kwNorm) return;
+      if (qNorm.indexOf(kwNorm) !== -1) {
+        // dopasowanie całej frazy — mocno punktowane
+        score += (3 + kwNorm.split(" ").length) * f.w;
+      } else {
+        const kwTokens = kwNorm.split(" ");
+        let overlap = 0;
+        kwTokens.forEach(function (t) {
+          if (t.length > 2 && qTokens.indexOf(t) !== -1) overlap++;
+        });
+        score += overlap * f.w;
+      }
+    });
+    return score;
+  }
+
+  // Zwraca { entry, score } najlepszego dopasowania albo null (brak pewnej odpowiedzi).
+  function findAnswer(question) {
+    if (!kb.data || !Array.isArray(kb.data.entries)) return null;
+    const qNorm = normalize(question);
+    if (!qNorm) return null;
+    const qTokens = qNorm.split(" ");
+    let best = null;
+    kb.data.entries.forEach(function (entry) {
+      const score = scoreEntry(entry, qNorm, qTokens);
+      if (!best || score > best.score) best = { entry: entry, score: score };
+    });
+    const THRESHOLD = 3;
+    return best && best.score >= THRESHOLD ? best : null;
+  }
+
+  function escalationText(lang) {
+    if (kb.data && kb.data.escalation) {
+      return kb.data.escalation[lang] || kb.data.escalation.pl;
+    }
+    return "Przekazuję sprawę do konsultanta. Zadzwoń na infolinię 800 123 456.";
+  }
+
   function scrollToBottom() {
     if (dom.log) dom.log.scrollTop = dom.log.scrollHeight;
   }
@@ -90,10 +173,21 @@
     });
   }
 
-  /* ----- Odpowiedź bota (treść z bazy wiedzy dodawana w kolejnym kroku) ----- */
-  async function botReply() {
-    const text =
-      "Dziękuję za wiadomość. Za chwilę nauczę się odpowiadać na podstawie bazy wiedzy banku.";
+  /* ----- Odpowiedź bota na podstawie bazy wiedzy ----- */
+  async function botReply(userText) {
+    const lang = "pl"; // wykrywanie języka dodawane w kolejnym kroku
+    let text;
+    const match = findAnswer(userText);
+    if (match) {
+      text = match.entry.a[lang] || match.entry.a.pl;
+    } else if (!kb.loaded) {
+      text =
+        "Trwa wczytywanie bazy wiedzy — spróbuj ponownie za chwilę. " +
+        "(Podczas testów lokalnych uruchom stronę przez serwer HTTP, a nie z pliku.)";
+    } else {
+      text = escalationText(lang);
+    }
+
     const typing = showTyping();
     await delay(450 + Math.random() * 350);
     typing.remove();
@@ -144,7 +238,7 @@
   }
 
   /* ----- Inicjalizacja ----- */
-  function init() {
+  async function init() {
     dom.log = $("#chat-log");
     dom.form = $("#composer");
     dom.input = $("#chat-input");
@@ -164,7 +258,19 @@
 
     greet();
     dom.input.focus();
+    await loadKnowledgeBase();
   }
+
+  /* ----- Publiczne API (używane też przez stronę demo) ----- */
+  window.BankBot = {
+    normalize: normalize,
+    loadKnowledgeBase: loadKnowledgeBase,
+    findAnswer: findAnswer,
+    escalationText: escalationText,
+    get knowledgeBase() {
+      return kb.data;
+    },
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

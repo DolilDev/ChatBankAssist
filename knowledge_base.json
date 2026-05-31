@@ -2,7 +2,299 @@
   "meta": {
     "bank": "Bank Przykładowy",
     "version": "1.0.0",
-    "languages": ["pl", "en"]
+    "languages": ["pl", "en"],
+    "updated": "2026-05-31"
   },
-  "entries": []
+  "categories": {
+    "konto": {
+      "label": { "pl": "Otwieranie konta", "en": "Account opening" },
+      "summary": { "pl": "otwierania konta", "en": "account opening" }
+    },
+    "przelewy": {
+      "label": { "pl": "Przelewy", "en": "Transfers" },
+      "summary": { "pl": "przelewów", "en": "transfers" }
+    },
+    "karty": {
+      "label": { "pl": "Karty", "en": "Cards" },
+      "summary": { "pl": "kart", "en": "cards" }
+    },
+    "bezpieczenstwo": {
+      "label": { "pl": "Bezpieczeństwo", "en": "Security" },
+      "summary": { "pl": "bezpieczeństwa", "en": "security" }
+    },
+    "reklamacje": {
+      "label": { "pl": "Reklamacje", "en": "Complaints" },
+      "summary": { "pl": "reklamacji", "en": "complaints" }
+    },
+    "kontakt": {
+      "label": { "pl": "Kontakt", "en": "Contact" },
+      "summary": { "pl": "kontaktu", "en": "contact" }
+    }
+  },
+  "escalation": {
+    "pl": "Niestety nie mam pewnej odpowiedzi na to pytanie. Przekazuję sprawę do konsultanta. Możesz też zadzwonić na infolinię 800 123 456 (pon.–pt. 8:00–20:00) lub napisać na kontakt@bankprzykladowy.pl.",
+    "en": "I'm sorry, I don't have a reliable answer to that. I'm escalating this to a human consultant. You can also call our helpline at +48 800 123 456 (Mon–Fri 8:00–20:00) or email kontakt@bankprzykladowy.pl."
+  },
+  "entries": [
+    {
+      "id": "open-account-online",
+      "category": "konto",
+      "keywords": ["otworzyć konto", "założyć konto", "nowe konto", "konto osobiste", "open account", "open an account", "new account", "sign up"],
+      "q": { "pl": "Jak otworzyć konto osobiste?", "en": "How do I open a personal account?" },
+      "a": {
+        "pl": "Konto osobiste otworzysz w 100% online w ok. 10 minut: kliknij „Otwórz konto”, wypełnij wniosek i potwierdź tożsamość przelewem weryfikacyjnym z innego banku lub w aplikacji mObywatel. Umowę podpiszesz elektronicznie. Konto możesz też założyć w dowolnym oddziale z dowodem osobistym.",
+        "en": "You can open a personal account 100% online in about 10 minutes: click \"Open account\", fill in the application and confirm your identity with a verification transfer from another bank or via the mObywatel app. The agreement is signed electronically. You can also open one at any branch with your ID card."
+      }
+    },
+    {
+      "id": "account-requirements",
+      "category": "konto",
+      "keywords": ["dokumenty do konta", "wymagania konto", "wiek konto", "kto może założyć konto", "documents account", "requirements account", "age to open account"],
+      "q": { "pl": "Jakie dokumenty i warunki są potrzebne do otwarcia konta?", "en": "What documents and conditions are required to open an account?" },
+      "a": {
+        "pl": "Potrzebujesz ważnego dowodu osobistego lub paszportu, numeru PESEL oraz ukończonych 18 lat (dla osób 13–18 lat dostępne jest konto młodzieżowe za zgodą rodzica). Konto mogą założyć rezydenci i nierezydenci posiadający dokument tożsamości i adres do korespondencji.",
+        "en": "You need a valid ID card or passport, a PESEL number and to be at least 18 years old (a youth account is available for ages 13–18 with parental consent). Both residents and non-residents with an identity document and a correspondence address may open an account."
+      }
+    },
+    {
+      "id": "account-fees",
+      "category": "konto",
+      "keywords": ["opłata za konto", "koszt konta", "prowadzenie konta", "ile kosztuje konto", "darmowe konto", "account fee", "cost of account", "free account", "monthly fee"],
+      "q": { "pl": "Ile kosztuje prowadzenie konta?", "en": "How much does maintaining an account cost?" },
+      "a": {
+        "pl": "Prowadzenie Konta Standardowego to 0 zł miesięcznie, jeśli spełnisz jeden z warunków: wpływ min. 1000 zł lub min. 1 płatność kartą/BLIK w miesiącu. W przeciwnym razie opłata wynosi 9 zł. Karta debetowa jest bezpłatna przy 4 transakcjach miesięcznie. Pełną taryfę znajdziesz w Tabeli Opłat i Prowizji.",
+        "en": "The Standard Account costs PLN 0 per month if you meet one condition: an incoming transfer of at least PLN 1,000 or at least one card/BLIK payment per month. Otherwise the fee is PLN 9. The debit card is free with 4 transactions per month. The full schedule is in the Table of Fees and Commissions."
+      }
+    },
+    {
+      "id": "account-youth-student",
+      "category": "konto",
+      "keywords": ["konto dla studenta", "konto młodzieżowe", "konto dla dziecka", "student account", "youth account", "account for teenager", "account for child"],
+      "q": { "pl": "Czy macie konto dla studentów lub młodzieży?", "en": "Do you offer accounts for students or teenagers?" },
+      "a": {
+        "pl": "Tak. Konto Student (do 26. roku życia) jest całkowicie bezpłatne – bez opłat za prowadzenie, kartę i wypłaty z bankomatów w kraju. Dla osób 13–18 lat oferujemy Konto Junior zakładane wspólnie z rodzicem lub opiekunem prawnym.",
+        "en": "Yes. The Student Account (up to age 26) is completely free – no fees for account maintenance, the card or domestic ATM withdrawals. For ages 13–18 we offer the Junior Account, opened together with a parent or legal guardian."
+      }
+    },
+    {
+      "id": "close-account",
+      "category": "konto",
+      "keywords": ["zamknąć konto", "zamknięcie konta", "wypowiedzenie umowy", "rezygnacja z konta", "close account", "cancel account", "terminate account"],
+      "q": { "pl": "Jak zamknąć konto?", "en": "How do I close my account?" },
+      "a": {
+        "pl": "Konto zamkniesz, składając dyspozycję w bankowości internetowej (Ustawienia → Zamknięcie konta), na infolinii lub w oddziale. Przed zamknięciem upewnij się, że saldo jest wyzerowane i nie masz aktywnych zleceń stałych. Standardowy okres wypowiedzenia umowy to 30 dni, bez dodatkowych opłat.",
+        "en": "You can close your account by submitting a request in online banking (Settings → Close account), via the helpline or at a branch. Before closing, make sure the balance is zero and there are no active standing orders. The standard notice period is 30 days, with no extra charges."
+      }
+    },
+    {
+      "id": "how-to-transfer",
+      "category": "przelewy",
+      "keywords": ["jak zrobić przelew", "wykonać przelew", "wysłać pieniądze", "przelew krajowy", "make a transfer", "send money", "domestic transfer", "how to transfer"],
+      "q": { "pl": "Jak wykonać przelew?", "en": "How do I make a transfer?" },
+      "a": {
+        "pl": "W aplikacji lub bankowości internetowej wybierz „Przelew”, podaj numer rachunku odbiorcy (26 cyfr), kwotę i tytuł, a następnie potwierdź autoryzację w aplikacji mobilnej lub kodem SMS. Przelew na własny telefon wykonasz też błyskawicznie przez BLIK na numer telefonu.",
+        "en": "In the app or online banking choose \"Transfer\", enter the recipient's account number (26 digits), the amount and a title, then confirm with mobile authorization or an SMS code. You can also send money instantly to a phone number using BLIK."
+      }
+    },
+    {
+      "id": "transfer-time",
+      "category": "przelewy",
+      "keywords": ["ile trwa przelew", "kiedy dojdzie przelew", "sesje elixir", "czas przelewu", "how long does a transfer take", "when will transfer arrive", "transfer time", "elixir sessions"],
+      "q": { "pl": "Ile trwa przelew i kiedy dotrze do odbiorcy?", "en": "How long does a transfer take to arrive?" },
+      "a": {
+        "pl": "Przelew do innego banku rozliczany jest w sesjach Elixir (zwykle 3 sesje w dni robocze: rano, w południe i po południu) – środki docierają tego samego lub następnego dnia roboczego. Przelew wewnętrzny między kontami w naszym banku jest natychmiastowy. Dla pilnych płatności wybierz Przelew Ekspresowy (Express Elixir) – do kilku minut, 24/7.",
+        "en": "A transfer to another bank is settled in Elixir sessions (usually 3 on business days: morning, noon and afternoon) – funds arrive the same or the next business day. Internal transfers between accounts in our bank are instant. For urgent payments choose an Express transfer (Express Elixir) – within minutes, 24/7."
+      }
+    },
+    {
+      "id": "instant-transfer",
+      "category": "przelewy",
+      "keywords": ["przelew natychmiastowy", "przelew ekspresowy", "express elixir", "szybki przelew", "instant transfer", "express transfer", "fast transfer"],
+      "q": { "pl": "Czy mogę zrobić przelew natychmiastowy?", "en": "Can I make an instant transfer?" },
+      "a": {
+        "pl": "Tak, wybierając opcję „Przelew Ekspresowy” (Express Elixir). Środki docierają zwykle w kilka minut, przez całą dobę, także w weekendy. Opłata wynosi 5 zł, a maksymalna kwota jednego przelewu ekspresowego to 100 000 zł. Odbiorca musi mieć bank obsługujący Express Elixir.",
+        "en": "Yes, by selecting the \"Express transfer\" (Express Elixir) option. Funds usually arrive within minutes, around the clock, including weekends. The fee is PLN 5 and the maximum amount of a single express transfer is PLN 100,000. The recipient's bank must support Express Elixir."
+      }
+    },
+    {
+      "id": "transfer-limits",
+      "category": "przelewy",
+      "keywords": ["limit przelewu", "limity przelewów", "zmiana limitu", "maksymalny przelew", "transfer limit", "change limit", "maximum transfer"],
+      "q": { "pl": "Jakie są limity przelewów i jak je zmienić?", "en": "What are the transfer limits and how do I change them?" },
+      "a": {
+        "pl": "Domyślny dzienny limit przelewów internetowych to 20 000 zł. Limit zmienisz samodzielnie w bankowości internetowej: Ustawienia → Limity → Przelewy, autoryzując zmianę w aplikacji. Podwyższenie limitu powyżej 50 000 zł może wymagać dodatkowego potwierdzenia ze względów bezpieczeństwa.",
+        "en": "The default daily online transfer limit is PLN 20,000. You can change it yourself in online banking: Settings → Limits → Transfers, authorizing the change in the app. Raising the limit above PLN 50,000 may require additional confirmation for security reasons."
+      }
+    },
+    {
+      "id": "international-transfer",
+      "category": "przelewy",
+      "keywords": ["przelew zagraniczny", "przelew walutowy", "swift", "sepa", "iban", "przelew za granicę", "international transfer", "foreign transfer", "currency transfer"],
+      "q": { "pl": "Jak wykonać przelew zagraniczny?", "en": "How do I make an international transfer?" },
+      "a": {
+        "pl": "Wybierz „Przelew zagraniczny”, podaj IBAN odbiorcy, kod SWIFT/BIC banku oraz walutę. Przelewy w euro w ramach SEPA są tanie i docierają zwykle w 1 dzień roboczy. Przelewy SWIFT w innych walutach trwają 1–3 dni robocze; koszt zależy od wybranej opcji opłat (SHA/OUR/BEN).",
+        "en": "Choose \"International transfer\", enter the recipient's IBAN, the bank's SWIFT/BIC code and the currency. SEPA transfers in euro are cheap and usually arrive in 1 business day. SWIFT transfers in other currencies take 1–3 business days; the cost depends on the chosen charge option (SHA/OUR/BEN)."
+      }
+    },
+    {
+      "id": "standing-order",
+      "category": "przelewy",
+      "keywords": ["zlecenie stałe", "przelew cykliczny", "automatyczny przelew", "stały przelew", "standing order", "recurring transfer", "automatic payment"],
+      "q": { "pl": "Jak ustawić zlecenie stałe?", "en": "How do I set up a standing order?" },
+      "a": {
+        "pl": "W bankowości internetowej wejdź w „Płatności” → „Zlecenia stałe” → „Nowe zlecenie”, podaj odbiorcę, kwotę oraz cykl (np. co miesiąc) i datę realizacji. Zlecenie stałe jest bezpłatne, a kwotę i termin możesz w każdej chwili zmienić lub anulować.",
+        "en": "In online banking go to \"Payments\" → \"Standing orders\" → \"New order\", enter the recipient, the amount and the cycle (e.g. monthly) and the execution date. Standing orders are free, and you can change or cancel the amount and date at any time."
+      }
+    },
+    {
+      "id": "order-card",
+      "category": "karty",
+      "keywords": ["zamówić kartę", "nowa karta", "karta debetowa", "karta kredytowa", "wyrobić kartę", "order a card", "new card", "debit card", "credit card"],
+      "q": { "pl": "Jak zamówić kartę?", "en": "How do I order a card?" },
+      "a": {
+        "pl": "Kartę debetową do konta zamówisz w aplikacji lub bankowości internetowej: „Karty” → „Zamów kartę”. Karta fizyczna dociera pocztą w 5–7 dni roboczych, a karta wirtualna jest dostępna od razu do płatności online i w telefonie. Wniosek o kartę kredytową wymaga oceny zdolności kredytowej.",
+        "en": "You can order a debit card for your account in the app or online banking: \"Cards\" → \"Order card\". A physical card arrives by post within 5–7 business days, while a virtual card is available immediately for online and phone payments. A credit card application requires a creditworthiness assessment."
+      }
+    },
+    {
+      "id": "activate-card",
+      "category": "karty",
+      "keywords": ["aktywacja karty", "aktywować kartę", "pin do karty", "uruchomić kartę", "activate card", "card pin", "set pin"],
+      "q": { "pl": "Jak aktywować nową kartę i ustawić PIN?", "en": "How do I activate a new card and set the PIN?" },
+      "a": {
+        "pl": "Kartę aktywujesz w aplikacji („Karty” → wybierz kartę → „Aktywuj”) lub na infolinii. PIN ustawisz samodzielnie w aplikacji albo zmienisz w dowolnym bankomacie naszego banku. Pamiętaj, by podpisać kartę na odwrocie, jeśli ma pole na podpis.",
+        "en": "Activate the card in the app (\"Cards\" → select the card → \"Activate\") or via the helpline. You can set the PIN yourself in the app or change it at any of our ATMs. Remember to sign the back of the card if it has a signature field."
+      }
+    },
+    {
+      "id": "block-card",
+      "category": "karty",
+      "keywords": ["zablokować kartę", "zastrzec kartę", "zgubiłem kartę", "skradziona karta", "kradzież karty", "block card", "lost card", "stolen card", "freeze card"],
+      "q": { "pl": "Zgubiłem kartę – jak ją zablokować?", "en": "I lost my card – how do I block it?" },
+      "a": {
+        "pl": "Działaj natychmiast. Kartę czasowo zablokujesz jednym kliknięciem w aplikacji („Karty” → „Zablokuj”), a trwale zastrzeżesz na infolinii 800 123 456 lub przez ogólnopolski System Zastrzegania Kart: +48 828 828 828 (czynne całą dobę). Po zastrzeżeniu zamówisz nową kartę bez zmiany numeru konta.",
+        "en": "Act immediately. You can temporarily freeze the card with one tap in the app (\"Cards\" → \"Freeze\"), and permanently cancel it via the helpline at +48 800 123 456 or the nationwide Card Reservation System: +48 828 828 828 (open 24/7). After cancellation you can order a new card without changing your account number."
+      }
+    },
+    {
+      "id": "card-limits",
+      "category": "karty",
+      "keywords": ["limit karty", "limity karty", "limit transakcji", "limit wypłat", "zmiana limitu karty", "card limit", "transaction limit", "withdrawal limit"],
+      "q": { "pl": "Jak zmienić limity na karcie?", "en": "How do I change my card limits?" },
+      "a": {
+        "pl": "Limity transakcji bezgotówkowych, wypłat z bankomatu i płatności internetowych ustawisz w aplikacji: „Karty” → wybierz kartę → „Limity”. Możesz też tymczasowo włączyć lub wyłączyć płatności internetowe i zbliżeniowe oraz transakcje zagraniczne.",
+        "en": "You can set limits for cashless transactions, ATM withdrawals and online payments in the app: \"Cards\" → select the card → \"Limits\". You can also temporarily enable or disable online and contactless payments as well as foreign transactions."
+      }
+    },
+    {
+      "id": "contactless-blik",
+      "category": "karty",
+      "keywords": ["blik", "płatność zbliżeniowa", "google pay", "apple pay", "płatność telefonem", "contactless payment", "pay by phone", "mobile payment"],
+      "q": { "pl": "Czy mogę płacić telefonem i BLIK-iem?", "en": "Can I pay with my phone and BLIK?" },
+      "a": {
+        "pl": "Tak. W aplikacji wygenerujesz kod BLIK do płatności w sklepach i internecie oraz do wypłat z bankomatu bez karty. Kartę możesz też dodać do Google Pay lub Apple Pay i płacić zbliżeniowo telefonem albo zegarkiem. Płatności zbliżeniowe do 100 zł zwykle nie wymagają PIN-u.",
+        "en": "Yes. In the app you can generate a BLIK code for payments in shops and online and for card-free ATM withdrawals. You can also add your card to Google Pay or Apple Pay and pay contactless with your phone or watch. Contactless payments up to PLN 100 usually don't require a PIN."
+      }
+    },
+    {
+      "id": "phishing",
+      "category": "bezpieczenstwo",
+      "keywords": ["phishing", "podejrzany email", "podejrzany sms", "fałszywy link", "oszustwo email", "wyłudzenie danych", "suspicious email", "suspicious sms", "fake link", "scam message"],
+      "q": { "pl": "Dostałem podejrzany e-mail/SMS rzekomo z banku. Co robić?", "en": "I received a suspicious email/SMS claiming to be from the bank. What should I do?" },
+      "a": {
+        "pl": "Nie klikaj w linki i nie podawaj danych logowania ani kodów. Bank nigdy nie prosi e-mailem ani SMS-em o hasło, pełny numer karty czy kod BLIK. Prześlij podejrzaną wiadomość na adres phishing@bankprzykladowy.pl i ją usuń. W razie wątpliwości zaloguj się wyłącznie przez oficjalną aplikację lub stronę.",
+        "en": "Don't click any links and never share your login details or codes. The bank never asks by email or SMS for your password, full card number or BLIK code. Forward the suspicious message to phishing@bankprzykladowy.pl and delete it. When in doubt, log in only via the official app or website."
+      }
+    },
+    {
+      "id": "strong-auth",
+      "category": "bezpieczenstwo",
+      "keywords": ["logowanie", "silne uwierzytelnianie", "dwuskładnikowe", "2fa", "autoryzacja", "kod sms", "bezpieczne logowanie", "login", "strong authentication", "two factor", "secure login"],
+      "q": { "pl": "Jak działa bezpieczne logowanie i autoryzacja?", "en": "How do secure login and authorization work?" },
+      "a": {
+        "pl": "Stosujemy silne uwierzytelnianie (SCA) zgodne z dyrektywą PSD2: logowanie i operacje potwierdzasz w aplikacji mobilnej (powiadomienie push) lub kodem SMS oraz PIN/biometrią. Włącz powiadomienia o logowaniu, nie udostępniaj nikomu kodów i korzystaj z aktualnej wersji aplikacji.",
+        "en": "We use strong customer authentication (SCA) compliant with the PSD2 directive: you confirm logins and operations in the mobile app (push notification) or with an SMS code plus a PIN/biometrics. Enable login notifications, never share your codes with anyone and keep the app up to date."
+      }
+    },
+    {
+      "id": "fraud-report",
+      "category": "bezpieczenstwo",
+      "keywords": ["nieautoryzowana transakcja", "podejrzenie oszustwa", "ukradziono pieniądze", "wyłudzenie", "zgłoszenie oszustwa", "fraud", "unauthorized transaction", "money stolen", "report fraud"],
+      "q": { "pl": "Widzę nieautoryzowaną transakcję / podejrzewam oszustwo. Co robić?", "en": "I see an unauthorized transaction / I suspect fraud. What should I do?" },
+      "a": {
+        "pl": "Natychmiast zablokuj kartę w aplikacji i zadzwoń na infolinię 800 123 456 (czynna całą dobę w sprawach bezpieczeństwa). Zmień hasło do bankowości. Zgłoś nieautoryzowaną transakcję – zgodnie z prawem zwykle masz prawo do zwrotu środków, jeśli nie doszło do rażącego zaniedbania. Rozważ też zgłoszenie sprawy na Policję.",
+        "en": "Immediately freeze your card in the app and call the helpline at +48 800 123 456 (open 24/7 for security matters). Change your online banking password. Report the unauthorized transaction – by law you are usually entitled to a refund unless there was gross negligence. Consider also reporting the case to the Police."
+      }
+    },
+    {
+      "id": "password-reset",
+      "category": "bezpieczenstwo",
+      "keywords": ["reset hasła", "zapomniałem hasła", "odzyskać dostęp", "zmiana hasła", "nie mogę się zalogować", "reset password", "forgot password", "regain access", "can't log in"],
+      "q": { "pl": "Zapomniałem hasła do bankowości – jak je zresetować?", "en": "I forgot my online banking password – how do I reset it?" },
+      "a": {
+        "pl": "Na ekranie logowania kliknij „Nie pamiętam hasła” i zweryfikuj tożsamość (np. kodem SMS i danymi z dokumentu). Możesz też ustanowić nowe hasło w aplikacji mobilnej lub na infolinii po weryfikacji. Po 3 błędnych próbach dostęp jest czasowo blokowany dla bezpieczeństwa.",
+        "en": "On the login screen click \"Forgot password\" and verify your identity (e.g. with an SMS code and document details). You can also set a new password in the mobile app or via the helpline after verification. After 3 failed attempts access is temporarily blocked for security."
+      }
+    },
+    {
+      "id": "file-complaint",
+      "category": "reklamacje",
+      "keywords": ["złożyć reklamację", "reklamacja", "skarga", "zgłosić problem", "niezgodność", "file a complaint", "submit complaint", "report a problem"],
+      "q": { "pl": "Jak złożyć reklamację?", "en": "How do I file a complaint?" },
+      "a": {
+        "pl": "Reklamację złożysz: w aplikacji/bankowości internetowej („Pomoc” → „Reklamacje”), telefonicznie pod 800 123 456, mailowo na reklamacje@bankprzykladowy.pl lub pisemnie w oddziale. Podaj swoje dane, opis sprawy i oczekiwany sposób rozwiązania. Otrzymasz potwierdzenie przyjęcia i numer zgłoszenia.",
+        "en": "You can file a complaint: in the app/online banking (\"Help\" → \"Complaints\"), by phone at +48 800 123 456, by email at reklamacje@bankprzykladowy.pl or in writing at a branch. Provide your details, a description of the issue and your expected resolution. You'll receive a confirmation and a case number."
+      }
+    },
+    {
+      "id": "complaint-time",
+      "category": "reklamacje",
+      "keywords": ["czas rozpatrzenia reklamacji", "ile trwa reklamacja", "termin reklamacji", "kiedy odpowiedź na reklamację", "complaint time", "how long complaint", "complaint deadline"],
+      "q": { "pl": "Ile trwa rozpatrzenie reklamacji?", "en": "How long does it take to handle a complaint?" },
+      "a": {
+        "pl": "Reklamacje rozpatrujemy zwykle do 15 dni roboczych. W szczególnie skomplikowanych przypadkach termin może wydłużyć się maksymalnie do 35 dni roboczych – wtedy poinformujemy Cię o przyczynie zwłoki. Jeśli nie zgadzasz się z decyzją, możesz odwołać się lub zwrócić do Rzecznika Finansowego.",
+        "en": "We usually handle complaints within 15 business days. In particularly complex cases the deadline may be extended up to a maximum of 35 business days – we'll then inform you of the reason for the delay. If you disagree with the decision, you can appeal or turn to the Financial Ombudsman."
+      }
+    },
+    {
+      "id": "chargeback",
+      "category": "reklamacje",
+      "keywords": ["chargeback", "reklamacja transakcji kartowej", "zwrot za transakcję", "nieudana płatność kartą", "nie otrzymałem towaru", "dispute transaction", "card transaction refund", "goods not received"],
+      "q": { "pl": "Jak reklamować transakcję kartą (chargeback)?", "en": "How do I dispute a card transaction (chargeback)?" },
+      "a": {
+        "pl": "Jeśli zapłaciłeś kartą, a nie otrzymałeś towaru/usługi, kwota została pobrana podwójnie lub w błędnej wysokości – złóż reklamację transakcji kartowej (chargeback) w aplikacji lub na infolinii. Zgłoś sprawę najlepiej w ciągu 120 dni od transakcji i dołącz dowody (potwierdzenie, korespondencję ze sprzedawcą).",
+        "en": "If you paid by card but didn't receive the goods/service, were charged twice or for the wrong amount – file a card transaction dispute (chargeback) in the app or via the helpline. Report it ideally within 120 days of the transaction and attach evidence (confirmation, correspondence with the merchant)."
+      }
+    },
+    {
+      "id": "contact-channels",
+      "category": "kontakt",
+      "keywords": ["kontakt", "infolinia", "numer telefonu", "jak się skontaktować", "czat", "email banku", "contact", "helpline", "phone number", "how to contact", "chat", "email"],
+      "q": { "pl": "Jak mogę skontaktować się z bankiem?", "en": "How can I contact the bank?" },
+      "a": {
+        "pl": "Dostępne kanały kontaktu: infolinia 800 123 456 (z zagranicy +48 22 123 45 67), czat i wideoczat w aplikacji, e-mail kontakt@bankprzykladowy.pl, formularz na stronie oraz sieć oddziałów. W pilnych sprawach bezpieczeństwa i zastrzegania kart infolinia działa całą dobę.",
+        "en": "Available contact channels: helpline +48 800 123 456 (from abroad +48 22 123 45 67), chat and video chat in the app, email kontakt@bankprzykladowy.pl, the website form and our branch network. For urgent security matters and card blocking the helpline is available 24/7."
+      }
+    },
+    {
+      "id": "branch-hours",
+      "category": "kontakt",
+      "keywords": ["godziny otwarcia", "godziny pracy", "kiedy czynne", "godziny infolinii", "oddział otwarty", "opening hours", "working hours", "branch hours", "helpline hours"],
+      "q": { "pl": "W jakich godzinach pracują oddziały i infolinia?", "en": "What are the branch and helpline opening hours?" },
+      "a": {
+        "pl": "Oddziały są zwykle czynne od poniedziałku do piątku w godz. 9:00–17:00, a wybrane placówki w galeriach handlowych także w soboty 10:00–14:00. Infolinia ogólna działa pon.–pt. 8:00–20:00, a obsługa zgłoszeń bezpieczeństwa i zastrzegania kart – całodobowo.",
+        "en": "Branches are usually open Monday to Friday 9:00–17:00, and selected locations in shopping malls also on Saturdays 10:00–14:00. The general helpline operates Mon–Fri 8:00–20:00, while security and card-blocking support is available around the clock."
+      }
+    },
+    {
+      "id": "lost-card-hotline",
+      "category": "kontakt",
+      "keywords": ["numer do zastrzegania kart", "zastrzeganie kart telefon", "infolinia karty 24h", "całodobowy numer", "card reservation phone", "24h card hotline", "block card number"],
+      "q": { "pl": "Pod jaki numer dzwonić, by zastrzec kartę poza godzinami pracy?", "en": "What number do I call to block a card outside working hours?" },
+      "a": {
+        "pl": "Kartę zastrzeżesz przez całą dobę pod numerem naszej infolinii 800 123 456 lub korzystając z ogólnopolskiego Systemu Zastrzegania Kart: +48 828 828 828 (czynny 24/7, dla kart wszystkich banków). Najszybciej zablokujesz kartę samodzielnie w aplikacji mobilnej.",
+        "en": "You can block your card around the clock via our helpline at +48 800 123 456 or using the nationwide Card Reservation System: +48 828 828 828 (open 24/7, for cards from all banks). The fastest option is to freeze the card yourself in the mobile app."
+      }
+    }
+  ]
 }
