@@ -863,12 +863,34 @@
     if (m) m.hidden = true;
   }
 
-  // Treść ostrzeżeń CORS uzupełniana jest w kroku „fix: ostrzeżenia CORS”.
-  function updateProviderWarning(/* provider */) {
+  // Ostrzeżenia o ograniczeniach CORS poszczególnych dostawców.
+  function updateProviderWarning(provider) {
     const el = $("#provider-warning");
     if (!el) return;
-    el.hidden = true;
-    el.innerHTML = "";
+    if (provider === "openai") {
+      el.className = "notice notice--warn";
+      el.innerHTML =
+        "<strong>⚠ OpenAI blokuje zapytania bezpośrednio z przeglądarki (CORS).</strong> " +
+        "Klucz wklejony tutaj najprawdopodobniej nie zadziała bez własnego serwera proxy. " +
+        "Do użycia w przeglądarce zalecamy <strong>Gemini</strong> (darmowy).";
+      el.hidden = false;
+    } else if (provider === "claude") {
+      el.className = "notice notice--warn";
+      el.innerHTML =
+        "<strong>⚠ Anthropic Claude również ogranicza zapytania z przeglądarki (CORS).</strong> " +
+        "Mimo nagłówka zezwalającego na dostęp z przeglądarki, w praktyce zwykle potrzebny jest serwer proxy. " +
+        "Bezproblemowo i domyślnie działa <strong>Gemini</strong>.";
+      el.hidden = false;
+    } else if (provider === "gemini") {
+      el.className = "notice notice--info";
+      el.innerHTML =
+        "Gemini działa bezpośrednio z przeglądarki. Darmowy klucz zdobędziesz w 2 minuty na " +
+        '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>.';
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+      el.innerHTML = "";
+    }
   }
 
   /* ----- Tryb ciemny / jasny ----- */
