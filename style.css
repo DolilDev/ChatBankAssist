@@ -644,6 +644,14 @@ body {
   display: none;
 }
 
+/* ----- Bańka podsumowania rozmowy ----- */
+.message--bot .bubble--summary {
+  background: var(--surface-2);
+  border-style: dashed;
+  border-color: var(--accent);
+  font-weight: 500;
+}
+
 /* ----- Ocena odpowiedzi (thumbs up / down) ----- */
 .msg-actions {
   display: flex;

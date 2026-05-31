@@ -14,6 +14,8 @@
     messages: [], // historia rozmowy [{ role, text, ts }]
     tokens: 0, // licznik tokenów w bieżącej rozmowie
     tokensExact: false, // true gdy oparte na rzeczywistym zużyciu z API
+    categories: [], // unikalne kategorie poruszone w rozmowie (do podsumowania)
+    lang: "pl", // język ostatniej wiadomości użytkownika
   };
 
   /* ----- Konfiguracja trybu API ----- */
@@ -498,6 +500,20 @@
     state.tokens = estimateConversationTokens();
     state.tokensExact = false;
     renderTokens();
+
+    // Odtwórz kategorie i język na potrzeby podsumowania.
+    saved.forEach(function (m) {
+      if (m.role === "user") {
+        const mt = findAnswer(m.text);
+        if (mt) trackCategory(mt.entry.category);
+      }
+    });
+    for (let i = saved.length - 1; i >= 0; i--) {
+      if (saved[i].role === "user") {
+        state.lang = detectLanguage(saved[i].text);
+        break;
+      }
+    }
     return true;
   }
 
@@ -598,6 +614,9 @@
   /* ----- Odpowiedź bota: tryb lokalny (baza wiedzy) albo tryb API ----- */
   async function botReply(userText) {
     const lang = detectLanguage(userText); // EN gdy użytkownik pisze po angielsku
+    state.lang = lang;
+    const classified = findAnswer(userText);
+    if (classified) trackCategory(classified.entry.category);
     const cfg = getApiConfig();
     if (cfg) {
       await apiReply(userText, lang, cfg);
@@ -711,6 +730,68 @@
       "Dzień dobry! Jestem asystentem Banku Przykładowego. W czym mogę pomóc? " +
         "Możesz zapytać np. o otwieranie konta, przelewy, karty czy bezpieczeństwo."
     );
+  }
+
+  /* ----- Podsumowanie rozmowy i nowa sesja ----- */
+  function trackCategory(cat) {
+    if (cat && state.categories.indexOf(cat) === -1) state.categories.push(cat);
+  }
+
+  function categoryLabel(catKey, lang, kind) {
+    const cats = kb.data && kb.data.categories;
+    const c = cats && cats[catKey];
+    if (!c) return catKey;
+    const obj = kind === "summary" ? c.summary : c.label;
+    return (obj && (obj[lang] || obj.pl)) || catKey;
+  }
+
+  function buildSummaryText(lang) {
+    const list = state.categories
+      .map(function (c) {
+        return categoryLabel(c, lang, "summary");
+      })
+      .join(", ");
+    if (lang === "en") {
+      return list
+        ? "📋 Conversation summary. Your questions were about: " + list + "."
+        : "📋 Conversation summary: we haven't covered any specific topics yet.";
+    }
+    return list
+      ? "📋 Podsumowanie rozmowy. Twoje pytania dotyczyły: " + list + "."
+      : "📋 Podsumowanie rozmowy: nie poruszyliśmy jeszcze konkretnych tematów.";
+  }
+
+  async function showSummary() {
+    if (state.busy) return;
+    setBusy(true);
+    try {
+      const lang = state.lang || "pl";
+      const typing = showTyping();
+      await delay(300);
+      typing.remove();
+      const bubble = addMessage("bot", "");
+      bubble.classList.add("bubble--summary");
+      await streamWords(bubble, buildSummaryText(lang));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function newChat() {
+    if (state.busy) return;
+    clearHistory();
+    state.categories = [];
+    state.lang = "pl";
+    if (dom.log) dom.log.innerHTML = "";
+    greet();
+    if (dom.input) dom.input.focus();
+  }
+
+  function initSessionTools() {
+    const sBtn = $("#summary-btn");
+    const nBtn = $("#newchat-btn");
+    if (sBtn) sBtn.addEventListener("click", showSummary);
+    if (nBtn) nBtn.addEventListener("click", newChat);
   }
 
   /* ----- Modale ----- */
@@ -915,6 +996,7 @@
     initTheme();
     initSettings();
     initWelcome();
+    initSessionTools();
 
     if (!dom.log || !dom.form) return; // np. strona demo
 
@@ -929,9 +1011,9 @@
     });
 
     greet();
+    await loadKnowledgeBase(); // najpierw baza, by odtworzenie mogło sklasyfikować pytania
     restoreHistory(); // po odświeżeniu czat nie znika
     dom.input.focus();
-    await loadKnowledgeBase();
   }
 
   /* ----- Publiczne API (używane też przez stronę demo) ----- */
