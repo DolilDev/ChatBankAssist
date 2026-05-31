@@ -562,6 +562,44 @@
     el.innerHTML = "";
   }
 
+  /* ----- Ekran powitalny (pierwsze uruchomienie) ----- */
+  const WELCOME_SEEN = "bank_welcome_seen";
+
+  function initWelcome() {
+    const modal = $("#welcome-modal");
+    if (!modal) return;
+
+    let seen = false;
+    try {
+      seen = localStorage.getItem(WELCOME_SEEN) === "1";
+    } catch (e) {
+      /* ignore */
+    }
+    // Pokaż tylko przy pierwszym uruchomieniu i gdy tryb API nie jest jeszcze ustawiony.
+    if (!seen && !getApiConfig()) openModal("welcome-modal");
+
+    function dismiss() {
+      try {
+        localStorage.setItem(WELCOME_SEEN, "1");
+      } catch (e) {
+        /* ignore */
+      }
+      closeModal("welcome-modal");
+    }
+
+    modal.addEventListener("click", function (e) {
+      if (e.target.closest("[data-close]")) dismiss();
+    });
+    const startBtn = $("#welcome-start");
+    const settingsBtn = $("#welcome-settings");
+    if (startBtn) startBtn.addEventListener("click", dismiss);
+    if (settingsBtn)
+      settingsBtn.addEventListener("click", function () {
+        dismiss();
+        openModal("settings-modal");
+      });
+  }
+
   /* ----- Panel ustawień (tryb API) ----- */
   function initSettings() {
     const btn = $("#settings-btn");
@@ -656,6 +694,7 @@
     dom.send = $("#send-btn");
 
     initSettings();
+    initWelcome();
 
     if (!dom.log || !dom.form) return; // np. strona demo
 

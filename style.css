@@ -578,6 +578,39 @@ body {
   display: none;
 }
 
+/* ----- Ekran powitalny ----- */
+.welcome__lead {
+  margin: 0 0 16px;
+  font-size: .92rem;
+}
+
+.steps {
+  margin: 10px 0 2px;
+  padding-left: 20px;
+  display: grid;
+  gap: 5px;
+}
+
+.steps li {
+  font-size: .85rem;
+}
+
+.steps a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.welcome__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.welcome__actions .btn {
+  flex: 1 1 auto;
+}
+
 /* ----- Responsywność ----- */
 @media (max-width: 600px) {
   .message { max-width: 88%; }
