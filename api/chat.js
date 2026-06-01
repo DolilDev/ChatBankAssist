@@ -11,6 +11,38 @@ const MODEL = "llama-3.3-70b-versatile";
 const MAX_MESSAGES = 30;
 const MAX_TEXT_LEN = 4000;
 
+/* ----- Rate limiting: maks. 10 żądań na minutę z jednego IP -----
+   Okno przesuwne w pamięci instancji funkcji (best-effort: stan współdzielony
+   tylko w obrębie „ciepłej" instancji, resetuje się przy cold-starcie). */
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60 * 1000;
+const ipHits = new Map();
+
+function getClientIp(req) {
+  const xff = req.headers["x-forwarded-for"];
+  if (typeof xff === "string" && xff.length) return xff.split(",")[0].trim();
+  return (
+    req.headers["x-real-ip"] ||
+    (req.socket && req.socket.remoteAddress) ||
+    "unknown"
+  );
+}
+
+// Zwraca true, gdy IP przekroczyło limit; w przeciwnym razie rejestruje trafienie.
+function isRateLimited(ip) {
+  const now = Date.now();
+  const recent = (ipHits.get(ip) || []).filter(function (t) {
+    return now - t < RATE_WINDOW_MS;
+  });
+  if (recent.length >= RATE_LIMIT) {
+    ipHits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  ipHits.set(ip, recent);
+  return false;
+}
+
 /* ----- System prompt: ten sam co w app.js, ugruntowany w bazie wiedzy ----- */
 const TONE_PL =
   'TON I STYL KOMUNIKACJI (obowiązkowe, bez wyjątków):\n' +
@@ -103,6 +135,13 @@ function parseBody(req) {
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return sendJson(res, 405, { error: "Dozwolona jest tylko metoda POST." });
+  }
+
+  if (isRateLimited(getClientIp(req))) {
+    res.setHeader("Retry-After", "60");
+    return sendJson(res, 429, {
+      error: "Zbyt wiele zapytań. Spróbuj ponownie za chwilę (limit 10/min).",
+    });
   }
 
   const apiKey = process.env.GROQ_API_KEY;
