@@ -6,6 +6,5 @@
   "scripts": {
     "test": "node --test",
     "kb:md": "node scripts/generate-knowledge-base-md.js"
-  },
-  "license": "MIT"
+  }
 }
