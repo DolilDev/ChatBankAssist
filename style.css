@@ -63,18 +63,6 @@
   --scrollbar-thumb-hover: #46587e;
 }
 
-:root[data-theme="dark"] .notice--warn {
-  background: #3a2a16;
-  border-color: #7c4a1e;
-  color: #f3c693;
-}
-
-:root[data-theme="dark"] .notice--info {
-  background: #16263f;
-  border-color: #2c456e;
-  color: #a8c7ff;
-}
-
 :root[data-theme="dark"] .rate-btn--up.is-active {
   background: #10331f;
   color: #6ee7a8;
@@ -474,7 +462,7 @@ body {
   transform: scale(.97);
 }
 
-/* ----- Strona demo ----- */
+/* ----- Link w nagłówku (powrót do czatu) ----- */
 .tool-link {
   color: rgba(255, 255, 255, .85);
   font-size: .8rem;
@@ -487,33 +475,6 @@ body {
 .tool-link:hover {
   background: rgba(255, 255, 255, .14);
   color: #fff;
-}
-
-.demo-panel {
-  flex: 0 0 auto;
-  padding: 14px 16px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-}
-
-.demo-panel__lead {
-  margin: 0 0 12px;
-  font-size: .82rem;
-  color: var(--text-muted);
-}
-
-.demo-panel__row {
-  display: flex;
-  gap: 12px;
-}
-
-.demo-panel__row .field {
-  flex: 1 1 0;
-  margin-bottom: 0;
-}
-
-@media (max-width: 560px) {
-  .demo-panel__row { flex-direction: column; gap: 10px; }
 }
 
 /* ----- Licznik tokenów ----- */
@@ -638,99 +599,7 @@ body {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ----- Sekcja ustawień / pola formularza ----- */
-.setting__title {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.badge {
-  font-size: .68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .4px;
-  color: var(--accent);
-  background: rgba(37, 99, 235, .12);
-  padding: 2px 8px;
-  border-radius: 999px;
-}
-
-.setting__desc {
-  margin: 0 0 16px;
-  font-size: .86rem;
-  color: var(--text-muted);
-}
-
-.field {
-  display: block;
-  margin-bottom: 14px;
-}
-
-.field__label {
-  display: block;
-  font-size: .8rem;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.field__control {
-  width: 100%;
-  padding: 10px 12px;
-  font: inherit;
-  font-size: .9rem;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  outline: 0;
-}
-
-.field__control:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
-}
-
-.field__key {
-  display: flex;
-  gap: 8px;
-}
-
-.field__key .field__control {
-  flex: 1 1 auto;
-}
-
-.field__toggle {
-  flex: 0 0 auto;
-  width: 42px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.field__toggle:hover {
-  color: var(--text);
-}
-
-.setting__actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.setting__status {
-  margin: 12px 0 0;
-  font-size: .82rem;
-  min-height: 1.2em;
-}
-
-.setting__status--ok { color: #16794c; }
-.setting__status--err { color: #c0392b; }
-
+/* ----- Przyciski (btn) ----- */
 .btn {
   font: inherit;
   font-size: .88rem;
@@ -749,43 +618,6 @@ body {
 
 .btn--primary:hover {
   background: var(--accent-hover);
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--text-muted);
-  border-color: var(--border);
-}
-
-.btn--ghost:hover {
-  background: var(--surface-2);
-  color: var(--text);
-}
-
-/* ----- Komunikat / ostrzeżenie ----- */
-.notice {
-  font-size: .82rem;
-  line-height: 1.5;
-  padding: 11px 13px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 14px;
-  border: 1px solid;
-}
-
-.notice--warn {
-  background: #fff7ed;
-  border-color: #fed7aa;
-  color: #9a3412;
-}
-
-.notice--info {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1e40af;
-}
-
-.notice[hidden] {
-  display: none;
 }
 
 /* ----- Eskalacja do konsultanta ----- */
@@ -884,37 +716,10 @@ body {
   background: #fef2f2;
 }
 
-/* ----- Ekran powitalny ----- */
+/* ----- Tekst wiodący w modalu wyboru trybu ----- */
 .welcome__lead {
   margin: 0 0 16px;
   font-size: .92rem;
-}
-
-.steps {
-  margin: 10px 0 2px;
-  padding-left: 20px;
-  display: grid;
-  gap: 5px;
-}
-
-.steps li {
-  font-size: .85rem;
-}
-
-.steps a {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.welcome__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.welcome__actions .btn {
-  flex: 1 1 auto;
 }
 
 /* ----- Wybór trybu rozmowy (AI vs lokalny) ----- */

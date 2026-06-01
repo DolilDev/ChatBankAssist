@@ -1,11 +1,11 @@
 # ChatBankAssist — asystent obsługi klienta banku
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-online-2563eb?style=flat-square)](https://dolildev.github.io/ChatBankAssist/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-online-2563eb?style=flat-square)](https://chat-bank-assist.vercel.app/)
 [![Deploy to GitHub Pages](https://github.com/DolilDev/ChatBankAssist/actions/workflows/deploy.yml/badge.svg)](https://github.com/DolilDev/ChatBankAssist/actions/workflows/deploy.yml)
 [![Vanilla JS](https://img.shields.io/badge/Vanilla-JS-f7df1e?style=flat-square&logo=javascript&logoColor=000)](#użyte-technologie-i-dlaczego)
-[![No backend](https://img.shields.io/badge/backend-none-16794c?style=flat-square)](#architektura)
+[![Backend: Vercel + Groq](https://img.shields.io/badge/backend-Vercel%20%2B%20Groq-16794c?style=flat-square)](#tryb-ai-i-bezpieczeństwo-klucza)
 
-Chatbot obsługi klienta dla banku działający w całości w przeglądarce — bez backendu, bez Node.js, bez frameworków. Odpowiedzi powstają na podstawie konfigurowalnej bazy wiedzy (FAQ), a opcjonalnie na podstawie modelu AI (Gemini / Claude / OpenAI) z kluczem API podawanym w interfejsie aplikacji.
+Chatbot obsługi klienta dla banku: frontend w czystym JavaScript (bez frameworków i kroku budowania) z lekkim backendem serverless dla trybu AI. Odpowiedzi powstają z konfigurowalnej bazy wiedzy (FAQ) w trybie lokalnym albo z modelu LLM (Groq, Llama 3.3 70B) w trybie AI — klucz API pozostaje wyłącznie po stronie serwera.
 
 ## Linki
 
@@ -27,7 +27,7 @@ Banki obsługują tysiące powtarzalnych zapytań dziennie (otwieranie konta, cz
 
 - odpowiada natychmiast na najczęstsze pytania na podstawie zweryfikowanej bazy wiedzy,
 - eskaluje sprawę do konsultanta, gdy nie zna pewnej odpowiedzi, zamiast ją zmyślać,
-- współpracuje z dowolnym modelem LLM bez zmian w kodzie.
+- łączy szybki tryb offline (baza wiedzy) z trybem AI opartym na tej samej, zweryfikowanej bazie jako kontekście.
 
 ---
 
@@ -39,19 +39,20 @@ Banki obsługują tysiące powtarzalnych zapytań dziennie (otwieranie konta, cz
 - Baza wiedzy ładowana z `knowledge-base.json` — 34 wpisy FAQ w 9 kategoriach (konta, przelewy, karty, bezpieczeństwo, reklamacje, kontakt, kredyty, oszczędności, aplikacja mobilna).
 - Dopasowanie odporne na język naturalny — lekki stemming PL (odmiana), tolerancja literówek (Levenshtein ≤ 1) i mostek synonimów PL↔EN, dzięki czemu „przelewy", „przlew" czy „loan" trafiają w ten sam temat.
 - Eskalacja do konsultanta z wyraźnym komunikatem i przyciskami kontaktu (telefon, e-mail), gdy brak pewnej odpowiedzi.
+- Tryb AI — odpowiedzi generuje model Llama 3.3 70B (Groq) przez backend serverless; klucz API pozostaje po stronie serwera, a przeglądarka rozmawia tylko z własnym endpointem `/api/chat`.
+- Tryb lokalny — szybkie odpowiedzi z bazy wiedzy w całości w przeglądarce, bez wysyłania zapytań na serwer.
 - Historia czatu w `sessionStorage` — rozmowa zachowuje się po odświeżeniu strony.
 - Ocena odpowiedzi (przydatna / nieprzydatna) pod każdą wiadomością asystenta.
-- Licznik tokenów — rzeczywisty w trybie API, szacowany lokalnie w trybie offline.
+- Licznik tokenów — rzeczywisty w trybie AI (z danych zużycia API), szacowany lokalnie w trybie offline.
 - Tryb ciemny / jasny z przełącznikiem, zapamiętywany i respektujący ustawienia systemu.
 - Wykrywanie języka — odpowiedź w języku pytania (polski lub angielski).
 - Podsumowanie rozmowy z listą poruszonych kategorii.
-- Tryb API — wybór dostawcy (Gemini / Claude / OpenAI) z kluczem przechowywanym wyłącznie w `sessionStorage`.
 - Chipy z podpowiedziami — gotowe przykładowe pytania, znikające po pierwszej wiadomości.
 - Eksport rozmowy do pliku `.txt` wraz z ocenami i podsumowaniem.
 - Dostępność (a11y) — `aria-live` na strumieniu odpowiedzi, pułapka fokusu w modalach, zamykanie `Esc` z powrotem fokusu, widoczny `:focus-visible` dla nawigacji klawiaturą.
-- Nagłówek `Content-Security-Policy` ograniczający źródła skryptów i dozwolone domeny `connect-src` do API dostawców.
+- Nagłówek `Content-Security-Policy` ograniczający źródła skryptów oraz `connect-src` do własnego backendu (`'self'`).
 - Testy jednostkowe rdzenia dopasowania (`node --test`), uruchamiane również w CI.
-- CI/CD — automatyczny deployment na GitHub Pages, testy, minifikacja CSS/JS, walidacja bazy wiedzy i generowanie `sitemap.xml`.
+- CI/CD — walidacja bazy wiedzy, testy, minifikacja CSS/JS, generowanie `sitemap.xml` i automatyczny deployment statycznej części na GitHub Pages.
 - Responsywny, profesjonalny wygląd (granat / biel) bez zewnętrznych frameworków CSS.
 
 ---
@@ -60,64 +61,57 @@ Banki obsługują tysiące powtarzalnych zapytań dziennie (otwieranie konta, cz
 
 Asystent ma dwa tryby:
 
-1. **Tryb lokalny (domyślny, bez klucza)** — pytanie jest normalizowane (m.in. polskie znaki), sprowadzane do rdzeni (lekki stemming PL) i dopasowywane do wpisów `knowledge-base.json` metodą scoringu pokrycia słów kluczowych, z tolerancją literówek (Levenshtein ≤ 1) i mostkiem synonimów PL↔EN. Synonimy liczą się jako jedno pojęcie, więc powtórzenia nie zawyżają wyniku. Brak wpisu powyżej progu pewności skutkuje eskalacją do konsultanta.
-2. **Tryb API (opcjonalny, z kluczem)** — pytanie wraz z bazą wiedzy jako kontekstem trafia do wybranego modelu LLM, a odpowiedź jest streamowana token po tokenie. Model jest instruowany, by odpowiadać wyłącznie na podstawie bazy wiedzy i eskalować, gdy nie zna odpowiedzi.
+1. **Tryb lokalny (bez połączenia z modelem)** — pytanie jest normalizowane (m.in. polskie znaki), sprowadzane do rdzeni (lekki stemming PL) i dopasowywane do wpisów `knowledge-base.json` metodą scoringu pokrycia słów kluczowych, z tolerancją literówek (Levenshtein ≤ 1) i mostkiem synonimów PL↔EN. Synonimy liczą się jako jedno pojęcie, więc powtórzenia nie zawyżają wyniku. Brak wpisu powyżej progu pewności skutkuje eskalacją do konsultanta.
+2. **Tryb AI (opcjonalny)** — pytanie wraz z bazą wiedzy jako kontekstem trafia do funkcji `/api/chat`, która dokłada klucz Groq po stronie serwera i streamuje odpowiedź modelu Llama 3.3 70B token po tokenie. Model jest instruowany, by odpowiadać wyłącznie na podstawie bazy wiedzy i eskalować, gdy nie zna odpowiedzi.
 
 ---
 
 ## Wersja no-code (Voiceflow)
 
-Ten sam asystent został odtworzony na platformie no-code Voiceflow, co pozwala zestawić podejście kodowe z wizualnym budowaniem flow. Osadzona wersja znajduje się na stronie [`voiceflow.html`](https://dolildev.github.io/ChatBankAssist/voiceflow.html), a surowy projekt w kreatorze jest dostępny [pod tym adresem](https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft).
+Ten sam asystent został odtworzony na platformie no-code Voiceflow, co pozwala zestawić podejście kodowe z wizualnym budowaniem flow. Osadzona wersja znajduje się na stronie [`voiceflow.html`](https://dolildev.github.io/ChatBankAssist/voiceflow.html) (hostowanej na GitHub Pages), a surowy projekt w kreatorze jest dostępny [pod tym adresem](https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft).
 
 | Kod (ten projekt) | No-code (Voiceflow) |
 |---|---|
 | Pełna kontrola | Szybki deployment |
-| Zero zależności | Wizualny flow |
+| Zero zależności frontendu | Wizualny flow |
 | Testowalny jednostkowo | Gotowa infrastruktura |
-| Działa offline | Integracje jednym kliknięciem |
+| Tryb offline (baza wiedzy) | Integracje jednym kliknięciem |
 
 ---
 
-## Tryb API i bezpieczeństwo kluczy
+## Tryb AI i bezpieczeństwo klucza
 
-Klucz API nie znajduje się w repozytorium ani na żadnym serwerze. Jest wprowadzany dopiero w działającej aplikacji i przechowywany wyłącznie w `sessionStorage` przeglądarki — pamięci, która:
+Tryb AI korzysta z modelu **Llama 3.3 70B** udostępnianego przez Groq. Klucz API (`GROQ_API_KEY`) jest przechowywany **wyłącznie po stronie serwera** — jako zmienna środowiskowa funkcji serverless na Vercel. Przeglądarka nigdy go nie widzi: wysyła zapytanie do własnego endpointu `/api/chat`, a ten dokłada klucz i streamuje odpowiedź z Groq z powrotem do klienta (SSE).
 
-- jest dostępna tylko dla jednej karty i jednej domeny,
-- znika z chwilą zamknięcia przeglądarki (w przeciwieństwie do `localStorage`),
-- nie jest nigdzie wysyłana — zapytania trafiają bezpośrednio z przeglądarki do API dostawcy.
+Dzięki temu:
 
-Klucz umieszczony w kodzie publicznego repozytorium zostałby natychmiast zindeksowany i przejęty przez boty — to jeden z najczęstszych wycieków sekretów. Z tego powodu `.gitignore` blokuje pliki `.env`/`*.key`, a aplikacja z założenia nie ma backendu, który mógłby taki sekret przechować.
+- klucz nie znajduje się w repozytorium ani w kodzie wysyłanym do przeglądarki,
+- `.gitignore` blokuje pliki `.env`/`*.key`, więc sekret nie trafi do gita przez przypadek,
+- funkcja `api/chat.js` ma prosty rate limiting (10 żądań/min na IP) ograniczający nadużycia oraz limity długości wejścia,
+- nagłówek `Content-Security-Policy` w `index.html` ogranicza `connect-src` do `'self'` — front rozmawia tylko z własnym backendem.
 
-Uwaga o CORS: OpenAI oraz Anthropic Claude zwykle blokują zapytania bezpośrednio z przeglądarki (polityka CORS) — bez własnego serwera proxy klucze tych dostawców najczęściej nie zadziałają. W takiej sytuacji aplikacja wyświetla wyraźne ostrzeżenie i rekomenduje Gemini, który jako jedyny działa wprost z przeglądarki.
+Tryb lokalny nie wymaga żadnego klucza — działa w całości w przeglądarce na bazie wiedzy.
+
+---
+
+## Deployment
+
+Projekt działa w dwóch miejscach, każde z innym zadaniem:
+
+- **Vercel** — hostuje główną aplikację (`index.html`, `style.css`, `app.js`) oraz funkcję serverless `api/chat.js` realizującą tryb AI. Klucz `GROQ_API_KEY` jest ustawiony jako zmienna środowiskowa projektu na Vercel (**Settings → Environment Variables**). Konfigurację funkcji opisuje `vercel.json` (`memory: 512`, `maxDuration: 30`).
+- **GitHub Pages** — hostuje `voiceflow.html` (osadzony czat Voiceflow) oraz statyczne lustro frontendu, publikowane przez GitHub Actions (patrz niżej). Tryb AI nie działa na Pages — wymaga backendu z Vercel.
 
 ---
 
 ## CI/CD
 
-Deployment jest w pełni zautomatyzowany przez GitHub Actions (`.github/workflows/deploy.yml`). Każdy push do gałęzi `main` uruchamia workflow, który:
+Statyczna część jest publikowana przez GitHub Actions (`.github/workflows/deploy.yml`). Każdy push do gałęzi `main` uruchamia workflow, który:
 
 - waliduje `knowledge-base.json` (poprawność JSON, minimalna liczba wpisów, wymagane pola),
+- uruchamia testy jednostkowe (`node --test`),
 - minifikuje CSS (`csso`) i JS (`terser`),
 - generuje `sitemap.xml` oraz `robots.txt`,
 - publikuje witrynę na GitHub Pages.
-
----
-
-## Deployment na Vercel
-
-Główna aplikacja (frontend wraz z funkcją serwerową `api/chat.js`) jest hostowana na Vercel. Tryb AI korzysta z Groq API, którego klucz pozostaje **wyłącznie po stronie serwera** — w zmiennej środowiskowej `GROQ_API_KEY`.
-
-Konfiguracja klucza w panelu Vercel:
-
-1. Zaimportuj repozytorium w Vercel (**Add New… → Project → Import**).
-2. Otwórz **Settings → Environment Variables**.
-3. Dodaj zmienną:
-   - **Name:** `GROQ_API_KEY`
-   - **Value:** klucz wygenerowany w groq.com
-   - **Environments:** Production (oraz Preview/Development, jeśli potrzebne)
-4. Zapisz i wykonaj redeploy (**Deployments → … → Redeploy**), aby funkcja `api/chat.js` zobaczyła nową zmienną.
-
-Konfiguracja funkcji znajduje się w `vercel.json` (`memory: 512`, `maxDuration: 30`). Do pracy lokalnej skopiuj `.env.example` do `.env` i uzupełnij `GROQ_API_KEY` — plik `.env` jest w `.gitignore` i nigdy nie trafia do repozytorium.
 
 ---
 
@@ -125,15 +119,17 @@ Konfiguracja funkcji znajduje się w `vercel.json` (`memory: 512`, `maxDuration:
 
 | Technologia | Po co | Dlaczego właśnie ona |
 |---|---|---|
-| **Vanilla JS (ES2018+)** | cała logika aplikacji | zero zależności i kroku budowania — kod działa wprost w przeglądarce, łatwy do audytu |
+| **Vanilla JS (ES2018+)** | logika frontendu | zero zależności i kroku budowania — kod działa wprost w przeglądarce, łatwy do audytu |
 | **HTML5 + CSS3 (zmienne CSS)** | UI, motywy, responsywność | natywne zmienne CSS dają tryb ciemny/jasny bez frameworka |
-| **Fetch + ReadableStream (SSE)** | streaming odpowiedzi z API | strumieniowanie token po tokenie bez bibliotek |
+| **Vercel Functions (Node)** | backend trybu AI | jedna funkcja serverless trzyma klucz po stronie serwera i proxy'uje Groq — bez utrzymywania własnego serwera |
+| **Groq (Llama 3.3 70B)** | model językowy trybu AI | szybki inference i streaming SSE; klucz pozostaje na serwerze |
+| **Fetch + ReadableStream (SSE)** | streaming odpowiedzi | strumieniowanie token po tokenie bez bibliotek |
 | **`knowledge-base.json`** | źródło wiedzy bota | rozdzielenie treści od kodu — baza jest edytowana bez dotykania logiki |
-| **GitHub Actions** | CI/CD | darmowy, natywny deployment na Pages wraz z walidacją i minifikacją |
+| **GitHub Actions** | CI/CD statycznej części | darmowy, natywny deployment na Pages wraz z walidacją i minifikacją |
 | **`terser` + `csso`** | minifikacja | mniejsze pliki na produkcji, źródła pozostają czytelne |
 | **`jq`** | walidacja JSON w CI | szybka kontrola poprawności bazy przed publikacją |
 
-Świadomie nie użyto Reacta/Vue, bundlerów ani frameworków CSS — celem było pokazanie, że kompletny, dopracowany produkt da się dostarczyć w czystych technologiach webowych.
+Świadomie nie użyto Reacta/Vue, bundlerów ani frameworków CSS po stronie frontendu — celem było pokazanie, że dopracowany produkt da się dostarczyć w czystych technologiach webowych, z minimalnym backendem ograniczonym do bezpiecznego proxy modelu AI.
 
 ---
 
@@ -157,21 +153,25 @@ Pytanie spoza zakresu (np. „Czy oferujecie ubezpieczenie na życie?") skutkuje
 
 ## Architektura
 
-Aplikacja ma architekturę static-first — całość wykonuje się po stronie przeglądarki, w czterech wyraźnie rozdzielonych warstwach:
+Aplikacja jest static-first z minimalnym backendem — frontend wykonuje się w przeglądarce, a tryb AI obsługuje jedna funkcja serverless. Warstwy są wyraźnie rozdzielone:
 
-- **Warstwa prezentacji** — `index.html` (główny czat), `demo.html` (szybki test) i `voiceflow.html` (wariant no-code) oraz wspólny arkusz `style.css` (motywy, responsywność).
-- **Rdzeń logiki** — `app.js` udostępnia moduł `window.BankBot`: normalizację języka, dopasowanie do bazy wiedzy, eskalację i integrację z modelem LLM.
+- **Warstwa prezentacji** — `index.html` (główny czat) i `voiceflow.html` (wariant no-code) oraz wspólny arkusz `style.css` (motywy, responsywność).
+- **Rdzeń frontendu** — `app.js` udostępnia moduł `window.BankBot`: normalizację języka, dopasowanie do bazy wiedzy, eskalację oraz komunikację z backendem trybu AI.
+- **Backend trybu AI** — `api/chat.js` (funkcja serverless Vercel) proxy'uje zapytania do Groq, trzymając klucz po stronie serwera; konfigurację opisuje `vercel.json`.
 - **Baza wiedzy** — `knowledge-base.json` jest jedynym źródłem prawdy; `knowledge-base.md` jest z niego generowany skryptem.
 - **Jakość i build** — testy jednostkowe w katalogu `tests/` oraz pipeline CI/CD w `.github/workflows/deploy.yml`.
 
 Struktura plików:
 
 ```
-index.html              # główna aplikacja czatu
-demo.html               # strona demo z polem na klucz API
-voiceflow.html          # wariant no-code: osadzony czat Voiceflow
+index.html              # główna aplikacja czatu (Vercel)
+voiceflow.html          # wariant no-code: osadzony czat Voiceflow (GitHub Pages)
 style.css               # style (granat/biel, tryb ciemny, responsywność)
-app.js                  # cała logika (rdzeń window.BankBot)
+app.js                  # logika frontendu (rdzeń window.BankBot)
+api/
+  └── chat.js           # funkcja serverless Vercel: proxy do Groq (SSE), klucz po stronie serwera
+vercel.json             # konfiguracja funkcji (memory 512, maxDuration 30)
+.env.example            # wzór zmiennej GROQ_API_KEY (klucz nigdy nie trafia do repo)
 knowledge-base.json     # baza wiedzy FAQ (34 wpisy, PL + EN) — jedyne źródło prawdy
 knowledge-base.md       # czytelna wersja bazy (generowana z JSON)
 scripts/
@@ -183,12 +183,12 @@ tests/
 package.json            # skrypty npm (test, kb:md)
 docs/preview.png        # podgląd interfejsu (do README)
 .github/workflows/
-  └── deploy.yml         # CI/CD: walidacja → testy → minifikacja → sitemap → deploy
+  └── deploy.yml         # CI/CD: walidacja → testy → minifikacja → sitemap → deploy na GitHub Pages
 .gitignore
 README.md
 ```
 
-> `sitemap.xml`, `robots.txt` oraz katalog `dist/` powstają automatycznie podczas deploymentu i nie są przechowywane w repozytorium.
+> `sitemap.xml`, `robots.txt` oraz katalog `dist/` powstają automatycznie podczas deploymentu na GitHub Pages i nie są przechowywane w repozytorium.
 
 ---
 
@@ -198,4 +198,4 @@ Logika dopasowania jest czysta i testowalna bez przeglądarki — harness podsta
 
 `knowledge-base.json` jest jedynym źródłem prawdy; `knowledge-base.md` jest z niego generowany, a osobny test pilnuje, by oba pliki pozostały spójne.
 
-Dostępność i bezpieczeństwo: treści użytkownika i asystenta renderowane są przez `textContent` (brak wstrzyknięć HTML), `innerHTML` używane jest wyłącznie dla statycznych ikon. Główne strony aplikacji (`index.html`, `demo.html`) wysyłają nagłówek `Content-Security-Policy`, a modale mają pułapkę fokusu i obsługę `Esc`.
+Dostępność i bezpieczeństwo: treści użytkownika i asystenta renderowane są przez `textContent` (brak wstrzyknięć HTML), `innerHTML` używane jest wyłącznie dla statycznych ikon. Strona aplikacji (`index.html`) wysyła nagłówek `Content-Security-Policy`, a modale mają pułapkę fokusu i obsługę `Esc`.

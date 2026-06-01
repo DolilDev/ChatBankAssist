@@ -1,6 +1,7 @@
 /* =========================================================================
    Bank — Asystent klienta
-   Logika aplikacji (vanilla JS, bez frameworków, bez backendu).
+   Logika frontendu (vanilla JS, bez frameworków). Tryb lokalny działa w całości
+   w przeglądarce; tryb AI korzysta z backendu /api/chat (Groq).
    ========================================================================= */
 "use strict";
 
@@ -20,16 +21,8 @@
 
   /* ----- Konfiguracja trybu API ----- */
   const STORAGE = {
-    provider: "bank_api_provider",
-    key: "bank_api_key",
     chat: "bank_chat_history",
     mode: "bank_chat_mode", // "ai" (Groq przez backend) | "local" (baza wiedzy)
-  };
-
-  const PROVIDERS = {
-    gemini: { label: "Google Gemini", model: "gemini-2.0-flash" },
-    claude: { label: "Anthropic Claude", model: "claude-3-5-haiku-latest" },
-    openai: { label: "OpenAI", model: "gpt-4o-mini" },
   };
 
   // Tryb czatu na index.html: "ai" (Groq przez backend) lub "local" (baza wiedzy).
@@ -289,47 +282,6 @@
     return "Dziękuję za kontakt. Ta sprawa wymaga interwencji konsultanta. Proszę skorzystać z jednej z poniższych form kontaktu.";
   }
 
-  /* ----- Tryb API: instrukcja systemowa ugruntowana w bazie wiedzy ----- */
-  const TONE_PL =
-    'TON I STYL KOMUNIKACJI (obowiązkowe, bez wyjątków):\n' +
-    '- Zawsze zwracaj się do klienta per "Pan/Pani" lub używaj form bezosobowych ("można", "należy", "jest możliwe").\n' +
-    '- Nigdy nie używaj: "cześć", "hej", "siema", "super", "świetnie", "spoko", "ok", "okej", "jasne".\n' +
-    '- Zamiast tego używaj: "Dzień dobry", "Oczywiście", "Rozumiem", "Chętnie pomogę", "Dziękuję za kontakt".\n' +
-    '- Zdania kończ uprzejmie, np. "Czy mogę pomóc w czymś jeszcze?"\n' +
-    '- Unikaj wykrzykników i emoji w odpowiedziach.\n' +
-    '- Ton: profesjonalny, rzeczowy, ciepły — jak pracownik banku przy okienku.\n\n';
-
-  function buildSystemPrompt(lang) {
-    const bank = (kb.data && kb.data.meta && kb.data.meta.bank) || "Bank";
-    let ctx = "";
-    if (kb.data && Array.isArray(kb.data.entries)) {
-      ctx = kb.data.entries
-        .map(function (e) {
-          const q = e.q ? e.q[lang] || e.q.pl : "";
-          const a = e.a ? e.a[lang] || e.a.pl : "";
-          return "- " + q + "\n  " + a;
-        })
-        .join("\n");
-    }
-    if (lang === "en") {
-      return (
-        "You are the customer-service assistant of " + bank + ", a Polish retail bank. " +
-        "Answer ONLY based on the FAQ knowledge base below. Be concise, professional and friendly. " +
-        "If the question is not covered by the knowledge base, say you don't have a reliable answer and " +
-        "that you are escalating to a human consultant (helpline +48 000 000 000). Reply in English.\n\n" +
-        "KNOWLEDGE BASE:\n" + ctx
-      );
-    }
-    return (
-      TONE_PL +
-      "Jesteś asystentem obsługi klienta banku „" + bank + "” (polski bank detaliczny). " +
-      "Odpowiadaj WYŁĄCZNIE na podstawie poniższej bazy wiedzy FAQ. Bądź zwięzły, profesjonalny i uprzejmy. " +
-      "Jeśli pytanie nie jest objęte bazą wiedzy, napisz, że nie masz pewnej odpowiedzi i przekazujesz sprawę " +
-      "do konsultanta (infolinia 000 000 000). Odpowiadaj po polsku.\n\n" +
-      "BAZA WIEDZY:\n" + ctx
-    );
-  }
-
   /* ----- Strumieniowe czytanie odpowiedzi SSE ----- */
   async function* sseLines(response) {
     const reader = response.body.getReader();
@@ -357,175 +309,6 @@
       /* ignore */
     }
     return new Error(provider + " API " + res.status + (detail ? ": " + detail.slice(0, 240) : ""));
-  }
-
-  /* ----- Google Gemini (obsługuje requesty z przeglądarki / CORS) ----- */
-  async function streamGemini(key, system, messages, onToken) {
-    const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/" +
-      PROVIDERS.gemini.model +
-      ":streamGenerateContent?alt=sse&key=" +
-      encodeURIComponent(key);
-    const contents = messages.map(function (m) {
-      return { role: m.role === "bot" ? "model" : "user", parts: [{ text: m.text }] };
-    });
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: contents,
-        generationConfig: { temperature: 0.3 },
-      }),
-    });
-    if (!res.ok) throw await readError(res, "Gemini");
-    let usage = null;
-    for await (const line of sseLines(res)) {
-      if (line.indexOf("data:") !== 0) continue;
-      const data = line.slice(5).trim();
-      if (!data || data === "[DONE]") continue;
-      let json;
-      try {
-        json = JSON.parse(data);
-      } catch (e) {
-        continue;
-      }
-      const cand = json.candidates && json.candidates[0];
-      const parts = cand && cand.content && cand.content.parts;
-      if (parts) parts.forEach(function (p) { if (p.text) onToken(p.text); });
-      if (json.usageMetadata) {
-        usage = {
-          promptTokens: json.usageMetadata.promptTokenCount,
-          completionTokens: json.usageMetadata.candidatesTokenCount,
-          totalTokens: json.usageMetadata.totalTokenCount,
-        };
-      }
-    }
-    return usage;
-  }
-
-  /* ----- OpenAI (UWAGA: przeglądarkowe CORS — patrz ostrzeżenia w ustawieniach) ----- */
-  async function streamOpenAI(key, system, messages, onToken) {
-    const msgs = [{ role: "system", content: system }].concat(
-      messages.map(function (m) {
-        return { role: m.role === "bot" ? "assistant" : "user", content: m.text };
-      })
-    );
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
-      body: JSON.stringify({
-        model: PROVIDERS.openai.model,
-        messages: msgs,
-        stream: true,
-        temperature: 0.3,
-        stream_options: { include_usage: true },
-      }),
-    });
-    if (!res.ok) throw await readError(res, "OpenAI");
-    let usage = null;
-    for await (const line of sseLines(res)) {
-      if (line.indexOf("data:") !== 0) continue;
-      const data = line.slice(5).trim();
-      if (!data || data === "[DONE]") continue;
-      let json;
-      try {
-        json = JSON.parse(data);
-      } catch (e) {
-        continue;
-      }
-      const delta = json.choices && json.choices[0] && json.choices[0].delta;
-      if (delta && delta.content) onToken(delta.content);
-      if (json.usage) {
-        usage = {
-          promptTokens: json.usage.prompt_tokens,
-          completionTokens: json.usage.completion_tokens,
-          totalTokens: json.usage.total_tokens,
-        };
-      }
-    }
-    return usage;
-  }
-
-  /* ----- Anthropic Claude (UWAGA: przeglądarkowe CORS — patrz ostrzeżenia w ustawieniach) ----- */
-  async function streamClaude(key, system, messages, onToken) {
-    const msgs = messages.map(function (m) {
-      return { role: m.role === "bot" ? "assistant" : "user", content: m.text };
-    });
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: PROVIDERS.claude.model,
-        max_tokens: 1024,
-        system: system,
-        messages: msgs,
-        stream: true,
-      }),
-    });
-    if (!res.ok) throw await readError(res, "Claude");
-    const usage = {};
-    for await (const line of sseLines(res)) {
-      if (line.indexOf("data:") !== 0) continue;
-      const data = line.slice(5).trim();
-      if (!data) continue;
-      let json;
-      try {
-        json = JSON.parse(data);
-      } catch (e) {
-        continue;
-      }
-      if (json.type === "content_block_delta" && json.delta && json.delta.text) {
-        onToken(json.delta.text);
-      } else if (json.type === "message_start" && json.message && json.message.usage) {
-        usage.promptTokens = json.message.usage.input_tokens;
-      } else if (json.type === "message_delta" && json.usage) {
-        usage.completionTokens = json.usage.output_tokens;
-      }
-    }
-    if (usage.promptTokens != null || usage.completionTokens != null) {
-      usage.totalTokens = (usage.promptTokens || 0) + (usage.completionTokens || 0);
-      return usage;
-    }
-    return null;
-  }
-
-  // Wspólny punkt wejścia dla trybu API. Zwraca info o zużyciu tokenów (lub null).
-  async function streamFromAPI(provider, key, messages, opts) {
-    opts = opts || {};
-    const onToken = opts.onToken || function () {};
-    const system = opts.system || "";
-    if (provider === "gemini") return streamGemini(key, system, messages, onToken);
-    if (provider === "openai") return streamOpenAI(key, system, messages, onToken);
-    if (provider === "claude") return streamClaude(key, system, messages, onToken);
-    throw new Error("Nieznany provider: " + provider);
-  }
-
-  // Czytelny komunikat błędu trybu API: rozpoznaje limit zapytań (429),
-  // odrzucony klucz (401/403) oraz blokadę CORS i dodaje konkretną wskazówkę.
-  function apiErrorText(provider, err, lang) {
-    const raw = (err && err.message) || String(err);
-    const name = (PROVIDERS[provider] && PROVIDERS[provider].label) || provider;
-    const rateLimited = /\b429\b|RESOURCE_EXHAUSTED|rate limit|quota/i.test(raw);
-    const authFailed = /\b401\b|\b403\b|API key not valid|API_KEY_INVALID|PERMISSION_DENIED|unauthorized/i.test(raw);
-    const corsLikely = /Failed to fetch|NetworkError|Load failed|CORS/i.test(raw);
-
-    let hint = "";
-    if (lang === "en") {
-      if (rateLimited) hint = "API request limit reached (429). Wait a minute and try again, or use local mode (no key). ";
-      else if (authFailed) hint = "The API key was rejected (invalid or lacking permissions). Check it in Settings. ";
-      else if (corsLikely) hint = "The browser most likely blocked the request (CORS). Gemini is the recommended provider for in-browser use. ";
-      return "Could not reach the " + name + " API. " + hint + "Details: " + raw;
-    }
-    if (rateLimited) hint = "Przekroczono limit zapytań do API (429). Odczekaj kilkadziesiąt sekund i spróbuj ponownie albo skorzystaj z trybu lokalnego (bez klucza). ";
-    else if (authFailed) hint = "Klucz API został odrzucony (nieprawidłowy lub bez uprawnień). Sprawdź go w Ustawieniach. ";
-    else if (corsLikely) hint = "Najprawdopodobniej przeglądarka zablokowała request (CORS). Do pracy w przeglądarce zalecany jest Gemini. ";
-    return "Nie udało się połączyć z API " + name + ". " + hint + "Szczegóły: " + raw;
   }
 
   function scrollToBottom() {
@@ -1262,18 +1045,13 @@
     dom.input.focus();
   }
 
-  /* ----- Publiczne API (używane też przez stronę demo) ----- */
+  /* ----- Publiczne API (używane przez testy jednostkowe) ----- */
   window.BankBot = {
     normalize: normalize,
     detectLanguage: detectLanguage,
     loadKnowledgeBase: loadKnowledgeBase,
     findAnswer: findAnswer,
     escalationText: escalationText,
-    buildSystemPrompt: buildSystemPrompt,
-    streamFromAPI: streamFromAPI,
-    apiErrorText: apiErrorText,
-    PROVIDERS: PROVIDERS,
-    STORAGE: STORAGE,
     get knowledgeBase() {
       return kb.data;
     },

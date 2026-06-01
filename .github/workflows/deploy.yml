@@ -51,7 +51,7 @@ jobs:
       - name: Prepare site (dist/)
         run: |
           mkdir -p dist
-          cp index.html demo.html voiceflow.html knowledge-base.json favicon.svg favicon.ico apple-touch-icon.png og-image.png icon-192.png icon-512.png site.webmanifest dist/
+          cp index.html voiceflow.html knowledge-base.json favicon.svg favicon.ico apple-touch-icon.png og-image.png icon-192.png icon-512.png site.webmanifest dist/
 
       - name: Minify CSS and JS
         run: |
@@ -70,7 +70,6 @@ jobs:
             echo '<?xml version="1.0" encoding="UTF-8"?>'
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
             echo "  <url><loc>${BASE}/</loc><lastmod>${DATE}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>"
-            echo "  <url><loc>${BASE}/demo.html</loc><lastmod>${DATE}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>"
             echo "  <url><loc>${BASE}/voiceflow.html</loc><lastmod>${DATE}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>"
             echo '</urlset>'
           } > dist/sitemap.xml
