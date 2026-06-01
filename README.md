@@ -125,22 +125,16 @@ Deployment jest w pełni zautomatyzowany przez GitHub Actions (`.github/workflow
 Po polsku:
 
 - „Jak otworzyć konto osobiste?"
-- „Ile trwa przelew i kiedy dotrze do odbiorcy?"
 - „Zgubiłem kartę — jak ją zablokować?"
-- „Jak ustawić zlecenie stałe?"
 - „Dostałem podejrzany SMS z banku, co robić?"
-- „Jak złożyć reklamację i ile trwa jej rozpatrzenie?"
-- „Pod jaki numer dzwonić, żeby zastrzec kartę w nocy?"
-- „Jak wziąć kredyt gotówkowy?" / „Jak założyć lokatę terminową?"
-- „Jak włączyć logowanie biometryczne w aplikacji?"
+- „Jak złożyć reklamację?"
 
 Po angielsku (asystent odpowiada po angielsku):
 
 - „How do I open an account?"
 - „How long does an international transfer take?"
-- „How can I contact the bank?"
 
-Pytanie spoza bazy wiedzy (np. „Czy oferujecie ubezpieczenie na życie?") skutkuje eskalacją do konsultanta.
+Pytanie spoza zakresu (np. „Czy oferujecie ubezpieczenie na życie?") skutkuje eskalacją do konsultanta.
 
 ---
 
