@@ -171,7 +171,6 @@ app.js                  # logika frontendu (rdzeń window.BankBot)
 api/
   └── chat.js           # funkcja serverless Vercel: proxy do Groq (SSE), klucz po stronie serwera
 vercel.json             # konfiguracja funkcji (memory 512, maxDuration 30)
-.env.example            # wzór zmiennej GROQ_API_KEY (klucz nigdy nie trafia do repo)
 knowledge-base.json     # baza wiedzy FAQ (34 wpisy, PL + EN) — jedyne źródło prawdy
 knowledge-base.md       # czytelna wersja bazy (generowana z JSON)
 scripts/
