@@ -17,5 +17,6 @@ Thumbs.db
 # Local environment / secrets — API keys NEVER belong in the repo
 .env
 .env.*
+!.env.example
 *.key
 secrets.json
