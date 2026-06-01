@@ -113,7 +113,7 @@ Konfiguracja klucza w panelu Vercel:
 2. Otwórz **Settings → Environment Variables**.
 3. Dodaj zmienną:
    - **Name:** `GROQ_API_KEY`
-   - **Value:** klucz wygenerowany w [console.groq.com/keys](https://console.groq.com/keys)
+   - **Value:** klucz wygenerowany w groq.com
    - **Environments:** Production (oraz Preview/Development, jeśli potrzebne)
 4. Zapisz i wykonaj redeploy (**Deployments → … → Redeploy**), aby funkcja `api/chat.js` zobaczyła nową zmienną.
 
