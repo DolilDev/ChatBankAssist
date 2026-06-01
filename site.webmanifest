@@ -1,0 +1,16 @@
+{
+  "name": "Bank — Asystent klienta",
+  "short_name": "Bank Asystent",
+  "description": "Asystent obsługi klienta banku — czat z bazą wiedzy, działa w całości w przeglądarce.",
+  "lang": "pl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b2545",
+  "theme_color": "#0b2545",
+  "icons": [
+    { "src": "favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}
