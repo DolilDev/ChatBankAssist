@@ -11,8 +11,7 @@ Chatbot obsługi klienta dla banku działający w całości w przeglądarce — 
 
 | Zasób | Adres |
 |---|---|
-| Aplikacja | https://dolildev.github.io/ChatBankAssist/ |
-| Demo z kluczem API | https://dolildev.github.io/ChatBankAssist/demo.html |
+| Aplikacja | https://chat-bank-assist.vercel.app/ |
 | Wersja Voiceflow (osadzona) | https://dolildev.github.io/ChatBankAssist/voiceflow.html |
 | Czysty czat Voiceflow | https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft |
 
@@ -101,6 +100,24 @@ Deployment jest w pełni zautomatyzowany przez GitHub Actions (`.github/workflow
 - minifikuje CSS (`csso`) i JS (`terser`),
 - generuje `sitemap.xml` oraz `robots.txt`,
 - publikuje witrynę na GitHub Pages.
+
+---
+
+## Deployment na Vercel
+
+Główna aplikacja (frontend wraz z funkcją serwerową `api/chat.js`) jest hostowana na Vercel. Tryb AI korzysta z Groq API, którego klucz pozostaje **wyłącznie po stronie serwera** — w zmiennej środowiskowej `GROQ_API_KEY`.
+
+Konfiguracja klucza w panelu Vercel:
+
+1. Zaimportuj repozytorium w Vercel (**Add New… → Project → Import**).
+2. Otwórz **Settings → Environment Variables**.
+3. Dodaj zmienną:
+   - **Name:** `GROQ_API_KEY`
+   - **Value:** klucz wygenerowany w [console.groq.com/keys](https://console.groq.com/keys)
+   - **Environments:** Production (oraz Preview/Development, jeśli potrzebne)
+4. Zapisz i wykonaj redeploy (**Deployments → … → Redeploy**), aby funkcja `api/chat.js` zobaczyła nową zmienną.
+
+Konfiguracja funkcji znajduje się w `vercel.json` (`memory: 512`, `maxDuration: 30`). Do pracy lokalnej skopiuj `.env.example` do `.env` i uzupełnij `GROQ_API_KEY` — plik `.env` jest w `.gitignore` i nigdy nie trafia do repozytorium.
 
 ---
 
