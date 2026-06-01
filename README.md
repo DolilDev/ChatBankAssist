@@ -9,10 +9,12 @@ Chatbot obsługi klienta dla banku działający w całości w przeglądarce — 
 
 ## Linki
 
-- Demo: https://dolildev.github.io/ChatBankAssist/
-- Demo z kluczem API: https://dolildev.github.io/ChatBankAssist/demo.html
-- Wersja Voiceflow (osadzona): https://dolildev.github.io/ChatBankAssist/voiceflow.html
-- Czysty czat Voiceflow: https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft
+| | |
+|---|---|
+| Aplikacja | https://dolildev.github.io/ChatBankAssist/ |
+| Demo z kluczem API | https://dolildev.github.io/ChatBankAssist/demo.html |
+| Wersja Voiceflow (osadzona) | https://dolildev.github.io/ChatBankAssist/voiceflow.html |
+| Czysty czat Voiceflow | https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft |
 
 ![Podgląd interfejsu asystenta](docs/preview.svg)
 
