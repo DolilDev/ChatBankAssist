@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Liberation Sans, Arial, sans-serif">
+  <rect width="1200" height="630" fill="#0b2545"/>
+  <rect x="0" y="608" width="1200" height="22" fill="#2563eb"/>
+
+  <!-- Logo banku -->
+  <rect x="110" y="120" width="104" height="104" rx="24" fill="#ffffff1f"/>
+  <path d="M132 200 h60 M138 200 V160 l24 -16 l24 16 V200 M152 200 v-20 h20 v20"
+        fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="240" y="184" fill="#9fb3d1" font-size="26" font-weight="700" letter-spacing="3">BANK · ASYSTENT KLIENTA</text>
+
+  <!-- Tytuł -->
+  <text x="110" y="350" fill="#ffffff" font-size="56" font-weight="800">Asystent obsługi klienta banku</text>
+  <rect x="112" y="372" width="128" height="6" rx="3" fill="#2563eb"/>
+
+  <!-- Podtytuł -->
+  <text x="110" y="426" fill="#c3d0e4" font-size="29">Chatbot w przeglądarce · vanilla JS · baza wiedzy + opcjonalny LLM</text>
+
+  <!-- Cechy -->
+  <g font-size="22" fill="#cdd9ec">
+    <rect x="110" y="470" width="186" height="44" rx="22" fill="#ffffff14" stroke="#ffffff26"/>
+    <text x="203" y="498" text-anchor="middle">Static-first</text>
+    <rect x="308" y="470" width="170" height="44" rx="22" fill="#ffffff14" stroke="#ffffff26"/>
+    <text x="393" y="498" text-anchor="middle">Bez backendu</text>
+    <rect x="490" y="470" width="210" height="44" rx="22" fill="#ffffff14" stroke="#ffffff26"/>
+    <text x="595" y="498" text-anchor="middle">Tryb ciemny / jasny</text>
+  </g>
+
+  <!-- URL -->
+  <text x="110" y="576" fill="#7f93b3" font-size="25">dolildev.github.io/ChatBankAssist</text>
+</svg>
