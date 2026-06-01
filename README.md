@@ -16,7 +16,7 @@ Chatbot obsługi klienta dla banku działający w całości w przeglądarce — 
 | Wersja Voiceflow (osadzona) | https://dolildev.github.io/ChatBankAssist/voiceflow.html |
 | Czysty czat Voiceflow | https://creator.voiceflow.com/share/6a1be20d7b492825fac4e318/environment/main/draft |
 
-![Podgląd interfejsu asystenta](docs/preview.svg)
+![Podgląd interfejsu asystenta](docs/preview.png)
 
 > _Powyżej: zrzut ekranu interfejsu asystenta._
 
@@ -164,7 +164,7 @@ tests/
   ├── core.test.js       # testy dopasowania: stemming, literówki, synonimy, eskalacja
   └── kb-md-sync.test.js # pilnuje synchronizacji .md ↔ .json
 package.json            # skrypty npm (test, kb:md)
-docs/preview.svg        # podgląd interfejsu (do README)
+docs/preview.png        # podgląd interfejsu (do README)
 .github/workflows/
   └── deploy.yml         # CI/CD: walidacja → testy → minifikacja → sitemap → deploy
 .gitignore
