@@ -32,20 +32,6 @@
     openai: { label: "OpenAI", model: "gpt-4o-mini" },
   };
 
-  // Zwraca { provider, key } gdy tryb API jest skonfigurowany, inaczej null.
-  function getApiConfig() {
-    try {
-      const provider = sessionStorage.getItem(STORAGE.provider) || "";
-      const key = sessionStorage.getItem(STORAGE.key) || "";
-      if (provider && key && PROVIDERS[provider]) {
-        return { provider: provider, key: key };
-      }
-    } catch (e) {
-      /* sessionStorage może być niedostępny */
-    }
-    return null;
-  }
-
   // Tryb czatu na index.html: "ai" (Groq przez backend) lub "local" (baza wiedzy).
   function getChatMode() {
     try {
@@ -847,47 +833,6 @@
     bumpTokens(estimateTokens(userText) + estimateTokens(text), false);
   }
 
-  // Tryb API — prawdziwy streaming tokenów od wybranego dostawcy.
-  async function apiReply(userText, lang, cfg) {
-    const typing = showTyping();
-    let bubble = null;
-    try {
-      const usage = await streamFromAPI(cfg.provider, cfg.key, state.messages.slice(), {
-        system: buildSystemPrompt(lang),
-        onToken: function (t) {
-          if (!bubble) {
-            if (typing.parentNode) typing.remove();
-            bubble = addMessage("bot", "");
-            bubble.classList.add("bubble--streaming");
-          }
-          bubble.textContent += t;
-          scrollToBottom();
-        },
-      });
-      if (typing.parentNode) typing.remove();
-      if (!bubble) {
-        bubble = addMessage("bot", "");
-        bubble.textContent = "(Otrzymano pustą odpowiedź z API.)";
-      }
-      bubble.classList.remove("bubble--streaming");
-      const rec = recordMessage("bot", bubble.textContent);
-      addRating(bubble, rec);
-      if (usage && usage.totalTokens) {
-        bumpTokens(usage.totalTokens, true); // rzeczywiste zużycie z API
-      } else {
-        bumpTokens(estimateTokens(userText) + estimateTokens(bubble.textContent), false);
-      }
-    } catch (err) {
-      if (typing.parentNode) typing.remove();
-      if (bubble) bubble.classList.remove("bubble--streaming");
-      const eb = bubble || addMessage("bot", "");
-      const msg = apiErrorText(cfg.provider, err, lang);
-      eb.textContent = "";
-      await streamWords(eb, msg);
-      recordMessage("bot", msg);
-    }
-  }
-
   /* ----- Tryb AI (Groq przez backend Vercel /api/chat) ----- */
   // Streaming z naszego backendu (format SSE zgodny z OpenAI, forwardowany z Groq).
   async function streamGroq(messages, lang, onToken) {
@@ -1208,36 +1153,6 @@
     }
   }
 
-  // Ostrzeżenia o ograniczeniach CORS poszczególnych dostawców.
-  function updateProviderWarning(provider) {
-    const el = $("#provider-warning");
-    if (!el) return;
-    if (provider === "openai") {
-      el.className = "notice notice--warn";
-      el.innerHTML =
-        "<strong>⚠ OpenAI blokuje zapytania bezpośrednio z przeglądarki (CORS).</strong> " +
-        "Klucz wklejony tutaj najprawdopodobniej nie zadziała bez własnego serwera proxy. " +
-        "Do użycia w przeglądarce zalecamy <strong>Gemini</strong> (darmowy).";
-      el.hidden = false;
-    } else if (provider === "claude") {
-      el.className = "notice notice--warn";
-      el.innerHTML =
-        "<strong>⚠ Anthropic Claude również ogranicza zapytania z przeglądarki (CORS).</strong> " +
-        "Mimo nagłówka zezwalającego na dostęp z przeglądarki, w praktyce zwykle potrzebny jest serwer proxy. " +
-        "Bezproblemowo i domyślnie działa <strong>Gemini</strong>.";
-      el.hidden = false;
-    } else if (provider === "gemini") {
-      el.className = "notice notice--info";
-      el.innerHTML =
-        "Gemini działa bezpośrednio z przeglądarki. Darmowy klucz zdobędziesz w 2 minuty na " +
-        '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>.';
-      el.hidden = false;
-    } else {
-      el.hidden = true;
-      el.innerHTML = "";
-    }
-  }
-
   /* ----- Tryb ciemny / jasny ----- */
   const THEME_KEY = "bank_theme";
   const ICON_MOON =
@@ -1315,89 +1230,6 @@
     if (!getChatMode()) openModal("mode-modal");
   }
 
-  /* ----- Panel ustawień (tryb API) ----- */
-  function initSettings() {
-    const btn = $("#settings-btn");
-    const modal = $("#settings-modal");
-    if (!btn || !modal) return;
-
-    const providerSel = $("#provider-select");
-    const keyField = $("#api-key-field");
-    const keyInput = $("#api-key-input");
-    const keyToggle = $("#api-key-toggle");
-    const saveBtn = $("#api-save");
-    const clearBtn = $("#api-clear");
-    const statusEl = $("#api-status");
-
-    function setStatus(text, kind) {
-      statusEl.textContent = text || "";
-      statusEl.className = "setting__status" + (kind ? " setting__status--" + kind : "");
-    }
-
-    function reflectProvider() {
-      keyField.hidden = !providerSel.value;
-      updateProviderWarning(providerSel.value);
-    }
-
-    // Wczytaj zapisane wartości z sessionStorage.
-    try {
-      providerSel.value = sessionStorage.getItem(STORAGE.provider) || "";
-      keyInput.value = sessionStorage.getItem(STORAGE.key) || "";
-    } catch (e) {
-      /* ignore */
-    }
-    reflectProvider();
-
-    btn.addEventListener("click", function () {
-      openModal("settings-modal");
-      setStatus("");
-    });
-    modal.addEventListener("click", function (e) {
-      const closer = e.target.closest("[data-close]");
-      if (closer) closeModal(closer.getAttribute("data-close"));
-    });
-    providerSel.addEventListener("change", reflectProvider);
-    keyToggle.addEventListener("click", function () {
-      keyInput.type = keyInput.type === "password" ? "text" : "password";
-    });
-
-    saveBtn.addEventListener("click", function () {
-      const provider = providerSel.value;
-      const key = keyInput.value.trim();
-      try {
-        if (!provider) {
-          sessionStorage.removeItem(STORAGE.provider);
-          sessionStorage.removeItem(STORAGE.key);
-          setStatus("Tryb lokalny (baza wiedzy) jest aktywny.", "ok");
-        } else if (!key) {
-          setStatus("Podaj klucz API albo wybierz tryb lokalny.", "err");
-        } else {
-          sessionStorage.setItem(STORAGE.provider, provider);
-          sessionStorage.setItem(STORAGE.key, key);
-          setStatus(
-            "Zapisano. Tryb API: " + PROVIDERS[provider].label + " — klucz tylko w tej sesji.",
-            "ok"
-          );
-        }
-      } catch (e) {
-        setStatus("Nie udało się zapisać (sessionStorage niedostępny).", "err");
-      }
-    });
-
-    clearBtn.addEventListener("click", function () {
-      providerSel.value = "";
-      keyInput.value = "";
-      try {
-        sessionStorage.removeItem(STORAGE.provider);
-        sessionStorage.removeItem(STORAGE.key);
-      } catch (e) {
-        /* ignore */
-      }
-      reflectProvider();
-      setStatus("Wyczyszczono klucz. Tryb lokalny aktywny.", "ok");
-    });
-  }
-
   /* ----- Inicjalizacja ----- */
   async function init() {
     dom.log = $("#chat-log");
@@ -1439,7 +1271,6 @@
     escalationText: escalationText,
     buildSystemPrompt: buildSystemPrompt,
     streamFromAPI: streamFromAPI,
-    getApiConfig: getApiConfig,
     apiErrorText: apiErrorText,
     PROVIDERS: PROVIDERS,
     STORAGE: STORAGE,
