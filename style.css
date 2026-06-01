@@ -953,6 +953,16 @@ body {
   margin: 18px 0 4px;
 }
 
+.vf-fallback {
+  margin: 10px 0 0;
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+.vf-fallback a {
+  color: var(--accent);
+}
+
 /* ----- Pływające okno asystenta (prawy dolny róg) ----- */
 .vf-iframe-container {
   position: fixed;
