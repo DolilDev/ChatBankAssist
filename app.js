@@ -23,6 +23,7 @@
     provider: "bank_api_provider",
     key: "bank_api_key",
     chat: "bank_chat_history",
+    mode: "bank_chat_mode", // "ai" (Groq przez backend) | "local" (baza wiedzy)
   };
 
   const PROVIDERS = {
@@ -43,6 +44,23 @@
       /* sessionStorage może być niedostępny */
     }
     return null;
+  }
+
+  // Tryb czatu na index.html: "ai" (Groq przez backend) lub "local" (baza wiedzy).
+  function getChatMode() {
+    try {
+      return sessionStorage.getItem(STORAGE.mode) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setChatMode(mode) {
+    try {
+      sessionStorage.setItem(STORAGE.mode, mode);
+    } catch (e) {
+      /* ignore */
+    }
   }
 
   /* ----- Pomocnicze ----- */
@@ -746,9 +764,8 @@
     state.lang = lang;
     const classified = findAnswer(userText);
     if (classified) trackCategory(classified.entry.category);
-    const cfg = getApiConfig();
-    if (cfg) {
-      await apiReply(userText, lang, cfg);
+    if (getChatMode() === "ai") {
+      await groqReply(userText, lang);
     } else {
       await localReply(userText, lang);
     }
@@ -865,6 +882,94 @@
       if (bubble) bubble.classList.remove("bubble--streaming");
       const eb = bubble || addMessage("bot", "");
       const msg = apiErrorText(cfg.provider, err, lang);
+      eb.textContent = "";
+      await streamWords(eb, msg);
+      recordMessage("bot", msg);
+    }
+  }
+
+  /* ----- Tryb AI (Groq przez backend Vercel /api/chat) ----- */
+  // Streaming z naszego backendu (format SSE zgodny z OpenAI, forwardowany z Groq).
+  async function streamGroq(messages, lang, onToken) {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        language: lang,
+        messages: messages.map(function (m) {
+          return { role: m.role, text: m.text };
+        }),
+      }),
+    });
+    if (!res.ok) throw await readError(res, "Groq");
+    let usage = null;
+    for await (const line of sseLines(res)) {
+      if (line.indexOf("data:") !== 0) continue;
+      const data = line.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        continue;
+      }
+      const delta = json.choices && json.choices[0] && json.choices[0].delta;
+      if (delta && delta.content) onToken(delta.content);
+      if (json.usage) {
+        usage = {
+          promptTokens: json.usage.prompt_tokens,
+          completionTokens: json.usage.completion_tokens,
+          totalTokens: json.usage.total_tokens,
+        };
+      }
+    }
+    return usage;
+  }
+
+  function groqErrorText(err, lang) {
+    const raw = (err && err.message) || String(err);
+    const rateLimited = /\b429\b|rate limit|too many|Zbyt wiele|limit/i.test(raw);
+    if (lang === "en") {
+      if (rateLimited)
+        return "Request limit reached — please wait a moment and try again, or switch to local mode (knowledge base). Details: " + raw;
+      return "Could not get an AI response right now. You can switch to local mode (knowledge base). Details: " + raw;
+    }
+    if (rateLimited)
+      return "Przekroczono limit zapytań — odczekaj chwilę i spróbuj ponownie albo przełącz się na tryb lokalny (baza wiedzy). Szczegóły: " + raw;
+    return "Nie udało się uzyskać odpowiedzi AI. Możesz przełączyć się na tryb lokalny (baza wiedzy). Szczegóły: " + raw;
+  }
+
+  async function groqReply(userText, lang) {
+    const typing = showTyping();
+    let bubble = null;
+    try {
+      const usage = await streamGroq(state.messages.slice(), lang, function (t) {
+        if (!bubble) {
+          if (typing.parentNode) typing.remove();
+          bubble = addMessage("bot", "");
+          bubble.classList.add("bubble--streaming");
+        }
+        bubble.textContent += t;
+        scrollToBottom();
+      });
+      if (typing.parentNode) typing.remove();
+      if (!bubble) {
+        bubble = addMessage("bot", "");
+        bubble.textContent = "(Otrzymano pustą odpowiedź z modelu.)";
+      }
+      bubble.classList.remove("bubble--streaming");
+      const rec = recordMessage("bot", bubble.textContent);
+      addRating(bubble, rec);
+      if (usage && usage.totalTokens) {
+        bumpTokens(usage.totalTokens, true); // rzeczywiste zużycie z API
+      } else {
+        bumpTokens(estimateTokens(userText) + estimateTokens(bubble.textContent), false);
+      }
+    } catch (err) {
+      if (typing.parentNode) typing.remove();
+      if (bubble) bubble.classList.remove("bubble--streaming");
+      const eb = bubble || addMessage("bot", "");
+      const msg = groqErrorText(err, lang);
       eb.textContent = "";
       await streamWords(eb, msg);
       recordMessage("bot", msg);
@@ -1182,42 +1287,32 @@
     }
   }
 
-  /* ----- Ekran powitalny (pierwsze uruchomienie) ----- */
-  const WELCOME_SEEN = "bank_welcome_seen";
-
-  function initWelcome() {
-    const modal = $("#welcome-modal");
+  /* ----- Wybór trybu rozmowy (AI vs lokalny) ----- */
+  function initModeSelector() {
+    const modal = $("#mode-modal");
+    const btn = $("#mode-btn");
+    // Ikona w nagłówku — pozwala zmienić tryb w dowolnym momencie.
+    if (btn) btn.addEventListener("click", function () { openModal("mode-modal"); });
     if (!modal) return;
 
-    let seen = false;
-    try {
-      seen = localStorage.getItem(WELCOME_SEEN) === "1";
-    } catch (e) {
-      /* ignore */
-    }
-    // Pokaż tylko przy pierwszym uruchomieniu i gdy tryb API nie jest jeszcze ustawiony.
-    if (!seen && !getApiConfig()) openModal("welcome-modal");
-
-    function dismiss() {
-      try {
-        localStorage.setItem(WELCOME_SEEN, "1");
-      } catch (e) {
-        /* ignore */
-      }
-      closeModal("welcome-modal");
-    }
-
     modal.addEventListener("click", function (e) {
-      if (e.target.closest("[data-close]")) dismiss();
+      const closer = e.target.closest("[data-close]");
+      if (closer) closeModal(closer.getAttribute("data-close"));
     });
-    const startBtn = $("#welcome-start");
-    const settingsBtn = $("#welcome-settings");
-    if (startBtn) startBtn.addEventListener("click", dismiss);
-    if (settingsBtn)
-      settingsBtn.addEventListener("click", function () {
-        dismiss();
-        openModal("settings-modal");
-      });
+
+    function choose(mode) {
+      setChatMode(mode);
+      closeModal("mode-modal");
+      if (dom.input) dom.input.focus();
+    }
+
+    const aiBtn = $("#mode-ai");
+    const localBtn = $("#mode-local");
+    if (aiBtn) aiBtn.addEventListener("click", function () { choose("ai"); });
+    if (localBtn) localBtn.addEventListener("click", function () { choose("local"); });
+
+    // Przy pierwszym wejściu (brak zapisanego wyboru) poproś o tryb.
+    if (!getChatMode()) openModal("mode-modal");
   }
 
   /* ----- Panel ustawień (tryb API) ----- */
@@ -1313,8 +1408,7 @@
     dom.suggestions = $("#suggestions");
 
     initTheme();
-    initSettings();
-    initWelcome();
+    initModeSelector();
     initSessionTools();
 
     if (!dom.log || !dom.form) return; // np. strona demo

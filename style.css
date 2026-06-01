@@ -917,6 +917,45 @@ body {
   flex: 1 1 auto;
 }
 
+/* ----- Wybór trybu rozmowy (AI vs lokalny) ----- */
+.mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.mode-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.mode-card__title {
+  font-weight: 700;
+  font-size: .98rem;
+}
+
+.mode-card__desc {
+  font-size: .85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
 /* ----- Responsywność ----- */
 @media (max-width: 600px) {
   .message { max-width: 88%; }

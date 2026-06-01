@@ -65,7 +65,7 @@
         <button type="button" class="tool-btn" id="theme-toggle" aria-label="Przełącz motyw" title="Tryb ciemny / jasny">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <button type="button" class="tool-btn" id="settings-btn" aria-label="Ustawienia" title="Ustawienia (tryb API)">
+        <button type="button" class="tool-btn" id="mode-btn" aria-label="Tryb czatu" title="Tryb czatu (AI / lokalny)">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3" />
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -100,34 +100,30 @@
     </footer>
   </div>
 
-  <!-- Ekran powitalny (pierwsze uruchomienie) -->
-  <div class="modal" id="welcome-modal" hidden>
-    <div class="modal__backdrop" data-close="welcome-modal"></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="welcome-title" tabindex="-1">
+  <!-- Wybór trybu rozmowy (pierwsze uruchomienie) -->
+  <div class="modal" id="mode-modal" hidden>
+    <div class="modal__backdrop" data-close="mode-modal"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="mode-title" tabindex="-1">
       <header class="modal__head">
-        <h2 id="welcome-title">👋 Witaj w asystencie banku</h2>
-        <button type="button" class="modal__close" data-close="welcome-modal" aria-label="Zamknij">
+        <h2 id="mode-title">Wybierz tryb rozmowy</h2>
+        <button type="button" class="modal__close" data-close="mode-modal" aria-label="Zamknij">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </header>
       <div class="modal__body">
         <p class="welcome__lead">
-          Bot odpowiada od razu — działa <strong>lokalnie</strong> na bazie wiedzy banku, bez żadnej konfiguracji.
-          Możesz też opcjonalnie podłączyć model AI, aby uzyskać bardziej naturalne odpowiedzi.
+          Asystent może odpowiadać na dwa sposoby. Wybór zapamiętamy na czas tej sesji —
+          możesz go zmienić ikoną w prawym górnym rogu.
         </p>
-        <div class="notice notice--info">
-          <strong>Darmowy klucz Gemini w 2 minuty</strong> (zalecany do pracy w przeglądarce):
-          <ol class="steps">
-            <li>Wejdź na <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a></li>
-            <li>Zaloguj się kontem Google</li>
-            <li>Kliknij <strong>„Create API key”</strong> (Utwórz klucz API)</li>
-            <li>Skopiuj wygenerowany klucz</li>
-            <li>Wklej go w Ustawieniach (ikona ⚙ w prawym górnym rogu) — gotowe!</li>
-          </ol>
-        </div>
-        <div class="welcome__actions">
-          <button type="button" class="btn btn--primary" id="welcome-settings">Wklej klucz API</button>
-          <button type="button" class="btn btn--ghost" id="welcome-start">Zacznij bez klucza</button>
+        <div class="mode-options">
+          <button type="button" class="mode-card" id="mode-ai">
+            <span class="mode-card__title">Tryb AI (Groq)</span>
+            <span class="mode-card__desc">Odpowiedzi generuje model LLM (Llama 3.3 70B) przez bezpieczny backend. Bardziej naturalne, swobodne odpowiedzi.</span>
+          </button>
+          <button type="button" class="mode-card" id="mode-local">
+            <span class="mode-card__title">Tryb lokalny</span>
+            <span class="mode-card__desc">Szybkie odpowiedzi z bazy wiedzy FAQ, w całości w przeglądarce — bez wysyłania zapytań na serwer.</span>
+          </button>
         </div>
       </div>
     </div>
