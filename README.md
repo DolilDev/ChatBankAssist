@@ -9,6 +9,7 @@ Chatbot obsługi klienta dla banku działający w całości w przeglądarce — 
 
 ## Linki
 
+| Zasób | Adres |
 |---|---|
 | Aplikacja | https://dolildev.github.io/ChatBankAssist/ |
 | Demo z kluczem API | https://dolildev.github.io/ChatBankAssist/demo.html |
