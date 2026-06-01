@@ -28,8 +28,6 @@ Banki obsługują tysiące powtarzalnych zapytań dziennie (otwieranie konta, cz
 - eskaluje sprawę do konsultanta, gdy nie zna pewnej odpowiedzi, zamiast ją zmyślać,
 - współpracuje z dowolnym modelem LLM bez zmian w kodzie.
 
-Jest to kompletny, produkcyjnie wyglądający przykład podejścia „static-first" — cała logika po stronie klienta, deployment w pełni zautomatyzowany.
-
 ---
 
 ## Funkcje
