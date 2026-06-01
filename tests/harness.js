@@ -11,7 +11,7 @@ const path = require("node:path");
 
 const ROOT = path.join(__dirname, "..");
 const kbJson = JSON.parse(
-  fs.readFileSync(path.join(ROOT, "knowledge_base.json"), "utf8")
+  fs.readFileSync(path.join(ROOT, "knowledge-base.json"), "utf8")
 );
 
 function memStore() {

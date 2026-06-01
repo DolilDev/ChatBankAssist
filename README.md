@@ -37,7 +37,7 @@ Jest to kompletny, produkcyjnie wyglądający przykład podejścia „static-fir
 - Interfejs czatu z bańkami wiadomości (użytkownik po prawej, asystent po lewej).
 - Streaming odpowiedzi słowo po słowie z migającym kursorem.
 - Wskaźnik pisania (animowane kropki) podczas generowania odpowiedzi.
-- Baza wiedzy ładowana z `knowledge_base.json` — 34 wpisy FAQ w 9 kategoriach (konta, przelewy, karty, bezpieczeństwo, reklamacje, kontakt, kredyty, oszczędności, aplikacja mobilna).
+- Baza wiedzy ładowana z `knowledge-base.json` — 34 wpisy FAQ w 9 kategoriach (konta, przelewy, karty, bezpieczeństwo, reklamacje, kontakt, kredyty, oszczędności, aplikacja mobilna).
 - Dopasowanie odporne na język naturalny — lekki stemming PL (odmiana), tolerancja literówek (Levenshtein ≤ 1) i mostek synonimów PL↔EN, dzięki czemu „przelewy", „przlew" czy „loan" trafiają w ten sam temat.
 - Eskalacja do konsultanta z wyraźnym komunikatem i przyciskami kontaktu (telefon, e-mail), gdy brak pewnej odpowiedzi.
 - Historia czatu w `sessionStorage` — rozmowa zachowuje się po odświeżeniu strony.
@@ -61,7 +61,7 @@ Jest to kompletny, produkcyjnie wyglądający przykład podejścia „static-fir
 
 Asystent ma dwa tryby:
 
-1. **Tryb lokalny (domyślny, bez klucza)** — pytanie jest normalizowane (m.in. polskie znaki), sprowadzane do rdzeni (lekki stemming PL) i dopasowywane do wpisów `knowledge_base.json` metodą scoringu pokrycia słów kluczowych, z tolerancją literówek (Levenshtein ≤ 1) i mostkiem synonimów PL↔EN. Synonimy liczą się jako jedno pojęcie, więc powtórzenia nie zawyżają wyniku. Brak wpisu powyżej progu pewności skutkuje eskalacją do konsultanta.
+1. **Tryb lokalny (domyślny, bez klucza)** — pytanie jest normalizowane (m.in. polskie znaki), sprowadzane do rdzeni (lekki stemming PL) i dopasowywane do wpisów `knowledge-base.json` metodą scoringu pokrycia słów kluczowych, z tolerancją literówek (Levenshtein ≤ 1) i mostkiem synonimów PL↔EN. Synonimy liczą się jako jedno pojęcie, więc powtórzenia nie zawyżają wyniku. Brak wpisu powyżej progu pewności skutkuje eskalacją do konsultanta.
 2. **Tryb API (opcjonalny, z kluczem)** — pytanie wraz z bazą wiedzy jako kontekstem trafia do wybranego modelu LLM, a odpowiedź jest streamowana token po tokenie. Model jest instruowany, by odpowiadać wyłącznie na podstawie bazy wiedzy i eskalować, gdy nie zna odpowiedzi.
 
 ---
@@ -97,7 +97,7 @@ Uwaga o CORS: OpenAI oraz Anthropic Claude zwykle blokują zapytania bezpośredn
 
 Deployment jest w pełni zautomatyzowany przez GitHub Actions (`.github/workflows/deploy.yml`). Każdy push do gałęzi `main` uruchamia workflow, który:
 
-- waliduje `knowledge_base.json` (poprawność JSON, minimalna liczba wpisów, wymagane pola),
+- waliduje `knowledge-base.json` (poprawność JSON, minimalna liczba wpisów, wymagane pola),
 - minifikuje CSS (`csso`) i JS (`terser`),
 - generuje `sitemap.xml` oraz `robots.txt`,
 - publikuje witrynę na GitHub Pages.
@@ -111,7 +111,7 @@ Deployment jest w pełni zautomatyzowany przez GitHub Actions (`.github/workflow
 | **Vanilla JS (ES2018+)** | cała logika aplikacji | zero zależności i kroku budowania — kod działa wprost w przeglądarce, łatwy do audytu |
 | **HTML5 + CSS3 (zmienne CSS)** | UI, motywy, responsywność | natywne zmienne CSS dają tryb ciemny/jasny bez frameworka |
 | **Fetch + ReadableStream (SSE)** | streaming odpowiedzi z API | strumieniowanie token po tokenie bez bibliotek |
-| **`knowledge_base.json`** | źródło wiedzy bota | rozdzielenie treści od kodu — baza jest edytowana bez dotykania logiki |
+| **`knowledge-base.json`** | źródło wiedzy bota | rozdzielenie treści od kodu — baza jest edytowana bez dotykania logiki |
 | **GitHub Actions** | CI/CD | darmowy, natywny deployment na Pages wraz z walidacją i minifikacją |
 | **`terser` + `csso`** | minifikacja | mniejsze pliki na produkcji, źródła pozostają czytelne |
 | **`jq`** | walidacja JSON w CI | szybka kontrola poprawności bazy przed publikacją |
@@ -150,7 +150,7 @@ Aplikacja ma architekturę static-first — całość wykonuje się po stronie p
 
 - **Warstwa prezentacji** — `index.html` (główny czat), `demo.html` (szybki test) i `voiceflow.html` (wariant no-code) oraz wspólny arkusz `style.css` (motywy, responsywność).
 - **Rdzeń logiki** — `app.js` udostępnia moduł `window.BankBot`: normalizację języka, dopasowanie do bazy wiedzy, eskalację i integrację z modelem LLM.
-- **Baza wiedzy** — `knowledge_base.json` jest jedynym źródłem prawdy; `knowledge_base.md` jest z niego generowany skryptem.
+- **Baza wiedzy** — `knowledge-base.json` jest jedynym źródłem prawdy; `knowledge-base.md` jest z niego generowany skryptem.
 - **Jakość i build** — testy jednostkowe w katalogu `tests/` oraz pipeline CI/CD w `.github/workflows/deploy.yml`.
 
 Struktura plików:
@@ -161,10 +161,10 @@ demo.html               # strona demo z polem na klucz API
 voiceflow.html          # osadzona wersja asystenta w Voiceflow + tabela porównania
 style.css               # style (granat/biel, tryb ciemny, responsywność)
 app.js                  # cała logika (rdzeń window.BankBot)
-knowledge_base.json     # baza wiedzy FAQ (34 wpisy, PL + EN) — jedyne źródło prawdy
-knowledge_base.md       # czytelna wersja bazy (generowana z JSON)
+knowledge-base.json     # baza wiedzy FAQ (34 wpisy, PL + EN) — jedyne źródło prawdy
+knowledge-base.md       # czytelna wersja bazy (generowana z JSON)
 scripts/
-  └── generate-kb-md.js  # generator knowledge_base.md z JSON (npm run kb:md)
+  └── generate-knowledge-base-md.js  # generator knowledge-base.md z JSON (npm run kb:md)
 tests/
   ├── harness.js         # ładuje window.BankBot w Node (atrapy DOM/fetch)
   ├── core.test.js       # testy dopasowania: stemming, literówki, synonimy, eskalacja
@@ -185,6 +185,6 @@ README.md
 
 Logika dopasowania jest czysta i testowalna bez przeglądarki — harness podstawia minimalne atrapy DOM i ładuje rdzeń `window.BankBot` w środowisku Node. Zestaw testów (`node --test`, uruchamiany również w CI) obejmuje normalizację i wykrywanie języka, niezmiennik „każde pytanie z bazy znajduje odpowiedź", jednoznaczne dopasowania, odmianę, literówki, synonimy oraz eskalację dla pytań spoza bazy.
 
-`knowledge_base.json` jest jedynym źródłem prawdy; `knowledge_base.md` jest z niego generowany, a osobny test pilnuje, by oba pliki pozostały spójne.
+`knowledge-base.json` jest jedynym źródłem prawdy; `knowledge-base.md` jest z niego generowany, a osobny test pilnuje, by oba pliki pozostały spójne.
 
 Dostępność i bezpieczeństwo: treści użytkownika i asystenta renderowane są przez `textContent` (brak wstrzyknięć HTML), `innerHTML` używane jest wyłącznie dla statycznych ikon. Strony wysyłają nagłówek `Content-Security-Policy`, a modale mają pułapkę fokusu i obsługę `Esc`.

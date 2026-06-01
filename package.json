@@ -5,7 +5,7 @@
   "description": "Asystent obsługi klienta banku — static-first, vanilla JS. Skrypty pomocnicze do testów i synchronizacji bazy wiedzy.",
   "scripts": {
     "test": "node --test",
-    "kb:md": "node scripts/generate-kb-md.js"
+    "kb:md": "node scripts/generate-knowledge-base-md.js"
   },
   "license": "MIT"
 }

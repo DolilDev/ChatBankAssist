@@ -25,16 +25,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate knowledge_base.json
+      - name: Validate knowledge-base.json
         run: |
           echo "Sprawdzam poprawność składni JSON…"
-          jq empty knowledge_base.json
-          count=$(jq '.entries | length' knowledge_base.json)
+          jq empty knowledge-base.json
+          count=$(jq '.entries | length' knowledge-base.json)
           echo "Liczba wpisów: $count"
           if [ "$count" -lt 20 ]; then
             echo "::error::Za mało wpisów w bazie wiedzy ($count < 20)"; exit 1
           fi
-          invalid=$(jq '[.entries[] | select((.id and .category and (.keywords|type=="array") and .q.pl and .a.pl) | not)] | length' knowledge_base.json)
+          invalid=$(jq '[.entries[] | select((.id and .category and (.keywords|type=="array") and .q.pl and .a.pl) | not)] | length' knowledge-base.json)
           if [ "$invalid" -ne 0 ]; then
             echo "::error::$invalid wpis(ów) bez wymaganych pól (id, category, keywords, q.pl, a.pl)"; exit 1
           fi
@@ -51,7 +51,7 @@ jobs:
       - name: Prepare site (dist/)
         run: |
           mkdir -p dist
-          cp index.html demo.html voiceflow.html knowledge_base.json favicon.svg favicon.ico apple-touch-icon.png dist/
+          cp index.html demo.html voiceflow.html knowledge-base.json favicon.svg favicon.ico apple-touch-icon.png dist/
 
       - name: Minify CSS and JS
         run: |

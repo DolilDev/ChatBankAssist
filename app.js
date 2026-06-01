@@ -108,7 +108,7 @@
 
   async function loadKnowledgeBase() {
     try {
-      const res = await fetch("knowledge_base.json", { cache: "no-store" });
+      const res = await fetch("knowledge-base.json", { cache: "no-store" });
       if (!res.ok) throw new Error("HTTP " + res.status);
       kb.data = await res.json();
       kb.loaded = true;

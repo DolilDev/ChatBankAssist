@@ -1,17 +1,17 @@
 "use strict";
 
 /* =========================================================================
-   Generator knowledge_base.md z knowledge_base.json.
+   Generator knowledge-base.md z knowledge-base.json.
    Jedno źródło prawdy (JSON) → czytelna dokumentacja (Markdown).
-   Uruchom: `npm run kb:md` (albo `node scripts/generate-kb-md.js`).
+   Uruchom: `npm run kb:md` (albo `node scripts/generate-knowledge-base-md.js`).
    Test tests/kb-md-sync.test.js pilnuje, by plik .md nie rozjechał się z .json.
    ========================================================================= */
 const fs = require("node:fs");
 const path = require("node:path");
 
 const ROOT = path.join(__dirname, "..");
-const JSON_PATH = path.join(ROOT, "knowledge_base.json");
-const MD_PATH = path.join(ROOT, "knowledge_base.md");
+const JSON_PATH = path.join(ROOT, "knowledge-base.json");
+const MD_PATH = path.join(ROOT, "knowledge-base.md");
 
 // Buduje treść Markdown z obiektu bazy wiedzy. Czysta funkcja (łatwa do testów).
 function renderMarkdown(kb) {
