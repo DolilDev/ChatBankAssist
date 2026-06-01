@@ -16,7 +16,7 @@ Chatbot obsługi klienta dla banku działający w całości w przeglądarce — 
 
 ![Podgląd interfejsu asystenta](docs/preview.svg)
 
-> _Powyżej: poglądowa makieta interfejsu asystenta._
+> _Powyżej: zrzut ekranu interfejsu asystenta._
 
 ---
 
