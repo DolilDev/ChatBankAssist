@@ -3,7 +3,7 @@
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-online-2563eb?style=flat-square)](https://dolildev.github.io/ChatBankAssist/)
 [![Deploy to GitHub Pages](https://github.com/DolilDev/ChatBankAssist/actions/workflows/deploy.yml/badge.svg)](https://github.com/DolilDev/ChatBankAssist/actions/workflows/deploy.yml)
 [![Vanilla JS](https://img.shields.io/badge/Vanilla-JS-f7df1e?style=flat-square&logo=javascript&logoColor=000)](#użyte-technologie-i-dlaczego)
-[![No backend](https://img.shields.io/badge/backend-none-16794c?style=flat-square)](#)
+[![No backend](https://img.shields.io/badge/backend-none-16794c?style=flat-square)](#architektura)
 
 Chatbot obsługi klienta dla banku działający w całości w przeglądarce — bez backendu, bez Node.js, bez frameworków. Odpowiedzi powstają na podstawie konfigurowalnej bazy wiedzy (FAQ), a opcjonalnie na podstawie modelu AI (Gemini / Claude / OpenAI) z kluczem API podawanym w interfejsie aplikacji.
 
@@ -152,7 +152,7 @@ Struktura plików:
 ```
 index.html              # główna aplikacja czatu
 demo.html               # strona demo z polem na klucz API
-voiceflow.html          # osadzona wersja asystenta w Voiceflow + tabela porównania
+voiceflow.html          # wariant no-code: osadzony czat Voiceflow
 style.css               # style (granat/biel, tryb ciemny, responsywność)
 app.js                  # cała logika (rdzeń window.BankBot)
 knowledge-base.json     # baza wiedzy FAQ (34 wpisy, PL + EN) — jedyne źródło prawdy
@@ -181,4 +181,4 @@ Logika dopasowania jest czysta i testowalna bez przeglądarki — harness podsta
 
 `knowledge-base.json` jest jedynym źródłem prawdy; `knowledge-base.md` jest z niego generowany, a osobny test pilnuje, by oba pliki pozostały spójne.
 
-Dostępność i bezpieczeństwo: treści użytkownika i asystenta renderowane są przez `textContent` (brak wstrzyknięć HTML), `innerHTML` używane jest wyłącznie dla statycznych ikon. Strony wysyłają nagłówek `Content-Security-Policy`, a modale mają pułapkę fokusu i obsługę `Esc`.
+Dostępność i bezpieczeństwo: treści użytkownika i asystenta renderowane są przez `textContent` (brak wstrzyknięć HTML), `innerHTML` używane jest wyłącznie dla statycznych ikon. Główne strony aplikacji (`index.html`, `demo.html`) wysyłają nagłówek `Content-Security-Policy`, a modale mają pułapkę fokusu i obsługę `Esc`.
